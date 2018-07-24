@@ -1376,8 +1376,7 @@ int main(int argc, char* argv[]) {
             
             /* loop over the shells K */
             poskmx_crt = 0;
-            ///for(usint k=0; k<=i; k++) {
-            for(usint k=0; k<basis.size(); k++) {
+            for(usint k=0; k<=i; k++) {
                 lk = basis[k].lA;
                 Cx = basis[k].Ax;
                 Cy = basis[k].Ay;
@@ -1387,10 +1386,9 @@ int main(int argc, char* argv[]) {
                 shgk = crt_siz[lk];
                 
                 /* loop over the shells L */
-                ///usint lmax = ( i == k ) ? j + 1 : basis.size();
+                usint lmax = ( i == k ) ? j + 1 : basis.size();
                 poslmx_crt = 0;
-                ///for(usint l=0; l<lmax; l++) {
-				for(usint l=0; l<=k; l++) {
+                for(usint l=0; l<lmax; l++) {
                     
                     ll  = basis[l].lA;
                     Dx  = basis[l].Ax;
