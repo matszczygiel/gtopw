@@ -103,7 +103,6 @@ template <class type> class FullC {
         usint mA,mB,mC,mD;
         usint mB_max,mC_max,mD_max;
         
-        /*
         for(mA=0; mA<shgA; mA++) {
             indi = posA_strt + mA + 1;
             mB_max = ( Ash == Bsh ) ? mA + 1 : shgB;
@@ -114,36 +113,6 @@ template <class type> class FullC {
                     indk = posC_strt + mC + 1;
                     mD_max = ( Ash == Csh && Bsh == Dsh ) ? mB + 1 : shgD;
                     for(mD=0; mD<mD_max; mD++) {
-                        indl = posD_strt + mD + 1;
-                        
-                        re_data = ( v[ mA ][ mB ][ mC ][ mD ] ).real();
-                        im_data = ( v[ mA ][ mB ][ mC ][ mD ] ).imag();
-                        znorm   = std::abs( v[ mA ][ mB ][ mC ][ mD ] );
-                        
-                        if( znorm < thrsh ) continue;
-                        
-                        ofs.write(reinterpret_cast<char*>(&indi),sizeof(usint));
-                        ofs.write(reinterpret_cast<char*>(&indj),sizeof(usint));
-                        ofs.write(reinterpret_cast<char*>(&indk),sizeof(usint));
-                        ofs.write(reinterpret_cast<char*>(&indl),sizeof(usint));
-                        
-                        ofs.write(reinterpret_cast<char*>(&re_data),sizeof(double));
-                        ofs.write(reinterpret_cast<char*>(&im_data),sizeof(double));
-                        
-                        tot_2E++;
-                    };
-                };
-            };
-        };
-        */
-        
-        for(mA=0; mA<shgA; mA++) {
-            indi = posA_strt + mA + 1;
-            for(mB=0; mB<shgB; mB++) {
-                indj = posB_strt + mB + 1;
-                for(mC=0; mC<shgC; mC++) {
-                    indk = posC_strt + mC + 1;
-                    for(mD=0; mD<shgD; mD++) {
                         indl = posD_strt + mD + 1;
                         
                         re_data = ( v[ mA ][ mB ][ mC ][ mD ] ).real();
