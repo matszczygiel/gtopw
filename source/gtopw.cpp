@@ -52,6 +52,18 @@ int main(int argc, char* argv[]) {
     ifstream ifile;
     string line,name;
     stringstream ss;
+
+    /* read destination path (MS)*/
+    ifile.open ( inpname );
+    while( getline(ifile, line) ) if( line == "$PATH" ) { 
+        getline(ifile, line); keys.path  = line;
+        break;
+    };
+    ifile.close();
+    line.clear();
+
+    keys.name_me( inpname );
+    
     ifile.open ( inpname );
     
     do { getline(ifile, line); } while( line != "$BASIS" );
@@ -104,6 +116,7 @@ int main(int argc, char* argv[]) {
                 gau_tmp.dA_im.push_back( d_im );
             };
             
+            cout << keys.norm1E << endl;
             RenormContr( gau_tmp, keys.norm1E );
             gau_tmp.Ax = nuc_tmp.Cx;
             gau_tmp.Ay = nuc_tmp.Cy;
@@ -220,17 +233,7 @@ int main(int argc, char* argv[]) {
     cout << endl;
     ifile.close();
 
-    /* read destination path (MS)*/
-    line.clear();
-    ifile.open ( inpname );
-    while( getline(ifile, line) ) if( line == "$PATH" ) { 
-        getline(ifile, line); keys.path  = line;
-        break;
-    };
-    ifile.close();
-
-    keys.name_me( inpname );
-    
+   
     /* ---------------------------------- */
     /* ----- ONE-ELECTRON INTEGRALS ----- */
     /* ---------------------------------- */

@@ -382,6 +382,12 @@ void RenormContr( GaussC& gau_tmp, const string norm_name ) {
     };
     
     ofstream ofs_norm( norm_name, std::ios::out|std::ios::binary|std::ios_base::app );
+    if(!ofs_norm.is_open())
+    {
+        cout << "Cannot open norm1E!\n";
+        exit(EXIT_FAILURE);
+    }
+
     for(int mi=0; mi<crt_siz[gau_tmp.lA]; mi++) {
         fra = norm / xyz_norm[gau_tmp.lA][mi];
         ofs_norm.write(reinterpret_cast<char*>(&fra),sizeof(double));
