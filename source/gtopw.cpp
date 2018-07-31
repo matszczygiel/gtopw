@@ -37,8 +37,7 @@ int main(int argc, char* argv[]) {
     string inpname;
     if( argc > 1 ) { inpname = argv[1]; } else
         { cout << " Name of the input file not specified! Emergency halt." << endl; exit( EXIT_FAILURE ); };
-    keys.name_me( inpname );
-    
+     
     /* read the $BASIS keyword */
     vector <GaussC> basis; 
     vector <Nuclei> nucli;
@@ -220,6 +219,17 @@ int main(int argc, char* argv[]) {
     };
     cout << endl;
     ifile.close();
+
+    /* read destination path (MS)*/
+    line.clear();
+    ifile.open ( inpname );
+    while( getline(ifile, line) ) if( line == "$PATH" ) { 
+        getline(ifile, line); keys.path  = line;
+        break;
+    };
+    ifile.close();
+
+    keys.name_me( inpname );
     
     /* ---------------------------------- */
     /* ----- ONE-ELECTRON INTEGRALS ----- */
@@ -1110,10 +1120,17 @@ int main(int argc, char* argv[]) {
     ///PrintCMatrix( ovrl_crt.v, num_crt );
     ///PrintCMatrix( capi_crt.v, num_crt );
     
-    PrintCMatrix( ovrl_crt.v, num_crt );
+    //PrintCMatrix( ovrl_crt.v, num_crt );
     
     /* write the one-electron integrals to the disk - cartesian */
     std::ofstream ofs( keys.file1E, std::ios::out|std::ios::binary );
+
+    /*check the file1E path (MS)*/
+    if(!ofs.is_open())
+    {
+        cout << "Cannot open file1E!\n";
+        return EXIT_FAILURE;
+    }
     
     WriteDown( ovrl_crt.v, num_crt2, ofs );
     WriteDown( kin_crt.v , num_crt2, ofs );
@@ -1176,7 +1193,7 @@ int main(int argc, char* argv[]) {
     ofs.close();
     */
     
-    PrintCMatrix( ovrl_crt.v , num_crt );
+    // PrintCMatrix( ovrl_crt.v , num_crt );
     
     cout << endl;
     cout << " All one-electron integrals done." << endl;
@@ -1314,6 +1331,13 @@ int main(int argc, char* argv[]) {
     /* open the two-electron integral file */
     std::ofstream ofs_2E;
     ofs_2E.open( keys.file2E, std::ios::out|std::ios::binary );
+    /*check the file1E path (MS)*/
+    if(!ofs.is_open())
+    {
+        cout << "Cannot open file2E!\n";
+        return EXIT_FAILURE;
+    }
+
     llint tot_2E = 0;
     
     int lk,ll,lkl;

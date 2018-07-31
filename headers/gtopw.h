@@ -137,6 +137,7 @@ class Keywords {
     std::string file2E;
     std::string proj1E;
     std::string norm1E;
+    std::string path;
     
     double thrsh;
     double cap_on;
@@ -177,10 +178,10 @@ class Keywords {
         file2E = file1E;
         proj1E = file1E;
         norm1E = file1E;
-        file1E = "file1E_" + file1E + ".F";
-        file2E = "file2E_" + file2E + ".F";
-        proj1E = "proj1E_" + proj1E;
-        norm1E = "norm1E_" + norm1E + ".F";
+        file1E = path + "file1E_" + file1E + ".F";
+        file2E = path + "file2E_" + file2E + ".F";
+        proj1E = path + "proj1E_" + proj1E;
+        norm1E = path + "norm1E_" + norm1E + ".F";
         
         std::cout << " Names of the integral files: " << std::endl;
         std::cout << "  " << file1E << std::endl;
