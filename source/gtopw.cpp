@@ -1296,6 +1296,11 @@ int main(int argc, char* argv[]) {
         string proj_name;
         proj_name = keys.proj1E + "_L" + to_string( lP ) + ".F";
         ofstream ofs_proj( proj_name, std::ios::out|std::ios::binary );
+        if(!ofs_proj.is_open())
+        {
+            cout << "Cannot open proj1E!\n";
+            return EXIT_FAILURE;
+        }
         
         for(mi=0; mi<num_crt; mi++) for(usint nr=0; nr<keys.n_rad; nr++) {
             valr = proj_crt.v[mi][nr].real();
@@ -1332,7 +1337,7 @@ int main(int argc, char* argv[]) {
     std::ofstream ofs_2E;
     ofs_2E.open( keys.file2E, std::ios::out|std::ios::binary );
     /*check the file1E path (MS)*/
-    if(!ofs.is_open())
+    if(!ofs_2E.is_open())
     {
         cout << "Cannot open file2E!\n";
         return EXIT_FAILURE;

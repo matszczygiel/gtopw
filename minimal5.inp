@@ -7,8 +7,8 @@ CAPINT
 PRINT1
 $END
 $PATH
-dupa/
-$END 
+path/
+$END
 $POINTS
 1
 0.000 0.000 0.000
