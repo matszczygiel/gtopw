@@ -1109,8 +1109,7 @@ int main(int argc, char* argv[]) {
     ///PrintCMatrix( dipz_crt.v, num_crt );
     ///PrintCMatrix( ovrl_crt.v, num_crt );
     ///PrintCMatrix( capi_crt.v, num_crt );
-    
-    PrintCMatrix( ovrl_crt.v, num_crt );
+    ///PrintCMatrix( ovrl_crt.v, num_crt );
     
     /* write the one-electron integrals to the disk - cartesian */
     std::ofstream ofs( keys.file1E, std::ios::out|std::ios::binary );
@@ -1175,8 +1174,6 @@ int main(int argc, char* argv[]) {
     
     ofs.close();
     */
-    
-    PrintCMatrix( ovrl_crt.v , num_crt );
     
     cout << endl;
     cout << " All one-electron integrals done." << endl;
