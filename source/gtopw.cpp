@@ -26,7 +26,6 @@ double omega[33][33];
 double clmr[bas_lmax + 1][2 * bas_lmax + 1][crt_siz[bas_lmax]] = {{{0.0}}};
 double xyz_norm[bas_lmax + 1][crt_siz[bas_lmax]] = {{0.0}};
 
-
 int main(int argc, char *argv[]) {
 	/* put a battery in the clock */
 	double t_start, t_end;
@@ -1448,6 +1447,9 @@ int main(int argc, char *argv[]) {
 
 #pragma omp parallel shared(keys, tot_2E, ofs_2E)
 		{
+#pragma omp single
+			cout << " Using " << omp_get_num_threads() << " threads.\n";
+
 			int li, lj, lij, mi, mj;
 			int shgi, shgj, shi, shj;
 			int ia, ja, ka, ib, jb, kb;
@@ -1480,7 +1482,7 @@ int main(int argc, char *argv[]) {
 #pragma omp for schedule(dynamic, 1) collapse(2)
 			for (int i = 0; i < basis.size(); i++)
 				for (int j = 0; j < basis.size(); j++) {
-                    if(j > i) continue;
+					if (j > i) continue;
 
 					li = basis[i].lA;
 					Ax = basis[i].Ax;
@@ -1830,11 +1832,11 @@ int main(int argc, char *argv[]) {
 							full_trans_crt.load_pos_mx(posimx_crt_v[i], posimx_crt_v[j],
 							                           poskmx_crt, poslmx_crt,
 							                           i, j, k, l);
-                                #pragma omp critical
-								full_trans_crt.to_disk(tot_2E, keys.thrsh, ofs_2E);
-                                
-								///full_trans_crt.print();
-							
+#pragma omp critical
+							full_trans_crt.to_disk(tot_2E, keys.thrsh, ofs_2E);
+
+							///full_trans_crt.print();
+
 							poslmx_crt += shgl;
 						};
 						poskmx_crt += shgk;
