@@ -458,8 +458,7 @@ int main(int argc, char *argv[]) {
 	hash[6][2] = +0;
 
 	int li, lj, lij, mi, mj, mjmx;
-	int mi_gam, mj_gam;
-	int indi, indj, mig, mjg;
+	int indi, indj;
 
 	int posimx_crt, posjmx_crt;
 	int posimx_sph, posjmx_sph;
@@ -1448,35 +1447,9 @@ int main(int argc, char *argv[]) {
 #pragma omp parallel shared(keys, tot_2E, ofs_2E)
 		{
 #pragma omp single
-			cout << " Using " << omp_get_num_threads() << " threads.\n";
-
-			int li, lj, lij, mi, mj;
-			int shgi, shgj, shi, shj;
-			int ia, ja, ka, ib, jb, kb;
-			double dum, ai, aj, aij;
-			double Ax, Ay, Az, Bx, By, Bz;
-			double ABx, ABy, ABz;
-			double kPx, kPy, kPz, kP2;
-			double Px, Py, Pz, kPP;
-			cdouble di, dj, dij, II;
-			cdouble fac, Ex0, Ey0, Ez0;
-			cdouble Ex0_1, Ey0_1, Ez0_1, Exyz;
-			cdouble tmp1s, tmp2s, tmp3s, tmp4s;
-			int lk, ll, lkl;
-			int shk, shl, shgk, shgl;
-			cdouble EABx0, EABy0, EABz0;
-			cdouble ECDx0, ECDy0, ECDz0;
-			double Cx, Cy, Cz, Dx, Dy, Dz;
-			double Qx, Qy, Qz, kQQ;
-			double kQx, kQy, kQz, kQ2;
-			double CDx, CDy, CDz;
-			double ak, al, akl;
-			cdouble EABx0_1, EABy0_1, EABz0_1;
-			cdouble ECDx0_1, ECDy0_1, ECDz0_1;
-			cdouble EABxyz, ECDxyz;
-			cdouble dk, dl, dkl;
-			int ic, jc, kc, id, jd, kd, mk, ml;
-			int poskmx_crt, poslmx_crt;
+			{
+				cout << " Using " << omp_get_num_threads() << " threads.\n";
+			}
 
 /* loop over the shells I */
 #pragma omp for schedule(dynamic, 1) collapse(2)
@@ -1484,76 +1457,70 @@ int main(int argc, char *argv[]) {
 				for (int j = 0; j < basis.size(); j++) {
 					if (j > i) continue;
 
-					li = basis[i].lA;
-					Ax = basis[i].Ax;
-					Ay = basis[i].Ay;
-					Az = basis[i].Az;
+					auto li = basis[i].lA;
+					auto Ax = basis[i].Ax;
+					auto Ay = basis[i].Ay;
+					auto Az = basis[i].Az;
 
-					shi = sph_siz[li];
-					shgi = crt_siz[li];
+					auto shgi = crt_siz[li];
 
-					lj = basis[j].lA;
-					Bx = basis[j].Ax;
-					By = basis[j].Ay;
-					Bz = basis[j].Az;
+					auto lj = basis[j].lA;
+					auto Bx = basis[j].Ax;
+					auto By = basis[j].Ay;
+					auto Bz = basis[j].Az;
 
-					kPx = basis[j].kx - basis[i].kx;
-					kPy = basis[j].ky - basis[i].ky;
-					kPz = basis[j].kz - basis[i].kz;
-					kP2 = kPx * kPx + kPy * kPy + kPz * kPz;
+					auto kPx = basis[j].kx - basis[i].kx;
+					auto kPy = basis[j].ky - basis[i].ky;
+					auto kPz = basis[j].kz - basis[i].kz;
 
-					ABx = Ax - Bx;
-					ABy = Ay - By;
-					ABz = Az - Bz;
+					auto ABx = Ax - Bx;
+					auto ABy = Ay - By;
+					auto ABz = Az - Bz;
 
-					EABx0 = exp(I * (basis[i].kx * Ax - basis[j].kx * Bx));
-					EABy0 = exp(I * (basis[i].ky * Ay - basis[j].ky * By));
-					EABz0 = exp(I * (basis[i].kz * Az - basis[j].kz * Bz));
+					auto EABx0 = exp(I * (basis[i].kx * Ax - basis[j].kx * Bx));
+					auto EABy0 = exp(I * (basis[i].ky * Ay - basis[j].ky * By));
+					auto EABz0 = exp(I * (basis[i].kz * Az - basis[j].kz * Bz));
 
-					lij = li + lj;
-					shj = sph_siz[lj];
-					shgj = crt_siz[lj];
+					auto lij = li + lj;
+					auto shgj = crt_siz[lj];
 
 					ECoefs<double> Eijx(li, lj, dum, dum, ABx);
 					ECoefs<double> Eijy(li, lj, dum, dum, ABy);
 					ECoefs<double> Eijz(li, lj, dum, dum, ABz);
 
 					/* loop over the shells K */
-					poskmx_crt = 0;
+					int poskmx_crt = 0;
 					for (usint k = 0; k <= i; k++) {
-						lk = basis[k].lA;
-						Cx = basis[k].Ax;
-						Cy = basis[k].Ay;
-						Cz = basis[k].Az;
+						auto lk = basis[k].lA;
+						auto Cx = basis[k].Ax;
+						auto Cy = basis[k].Ay;
+						auto Cz = basis[k].Az;
 
-						shk = sph_siz[lk];
-						shgk = crt_siz[lk];
+						auto shgk = crt_siz[lk];
 
 						/* loop over the shells L */
 						usint lmax = (i == k) ? j + 1 : basis.size();
-						poslmx_crt = 0;
+						int poslmx_crt = 0;
 						for (usint l = 0; l < lmax; l++) {
-							ll = basis[l].lA;
-							Dx = basis[l].Ax;
-							Dy = basis[l].Ay;
-							Dz = basis[l].Az;
+							auto ll = basis[l].lA;
+							auto Dx = basis[l].Ax;
+							auto Dy = basis[l].Ay;
+							auto Dz = basis[l].Az;
 
-							kQx = basis[l].kx - basis[k].kx;
-							kQy = basis[l].ky - basis[k].ky;
-							kQz = basis[l].kz - basis[k].kz;
-							kQ2 = kQx * kQx + kQy * kQy + kQz * kQz;
+							auto kQx = basis[l].kx - basis[k].kx;
+							auto kQy = basis[l].ky - basis[k].ky;
+							auto kQz = basis[l].kz - basis[k].kz;
 
-							CDx = Cx - Dx;
-							CDy = Cy - Dy;
-							CDz = Cz - Dz;
+							auto CDx = Cx - Dx;
+							auto CDy = Cy - Dy;
+							auto CDz = Cz - Dz;
 
-							ECDx0 = exp(I * (basis[i].kx * Ax - basis[j].kx * Bx));
-							ECDy0 = exp(I * (basis[i].ky * Ay - basis[j].ky * By));
-							ECDz0 = exp(I * (basis[i].kz * Az - basis[j].kz * Bz));
+							auto ECDx0 = exp(I * (basis[i].kx * Ax - basis[j].kx * Bx));
+							auto ECDy0 = exp(I * (basis[i].ky * Ay - basis[j].ky * By));
+							auto ECDz0 = exp(I * (basis[i].kz * Az - basis[j].kz * Bz));
 
-							lkl = lk + ll;
-							shl = sph_siz[ll];
-							shgl = crt_siz[ll];
+							auto lkl = lk + ll;
+							auto shgl = crt_siz[ll];
 
 							ECoefs<double> Eklx(lk, ll, dum, dum, CDx);
 							ECoefs<double> Ekly(lk, ll, dum, dum, CDy);
@@ -1568,22 +1535,22 @@ int main(int argc, char *argv[]) {
 
 							/* loop over contractions - shell I */
 							for (usint k1 = 0; k1 < basis[i].alphaA.size(); k1++) {
-								ai = basis[i].alphaA[k1];
-								di = basis[i].dA_re[k1] - I * basis[i].dA_im[k1];
+								auto ai = basis[i].alphaA[k1];
+								auto di = basis[i].dA_re[k1] - I * basis[i].dA_im[k1];
 
 								/* loop over contractions - shell J */
 								for (usint k2 = 0; k2 < basis[j].alphaA.size(); k2++) {
-									aj = basis[j].alphaA[k2];
-									dj = basis[j].dA_re[k2] + I * basis[j].dA_im[k2];
+									auto aj = basis[j].alphaA[k2];
+									auto dj = basis[j].dA_re[k2] + I * basis[j].dA_im[k2];
 
-									aij = ai + aj;
-									dij = di * dj;
+									auto aij = ai + aj;
+									auto dij = di * dj;
 
-									Px = ai * Ax + aj * Bx;
+									auto Px = ai * Ax + aj * Bx;
 									Px = Px / aij;
-									Py = ai * Ay + aj * By;
+									auto Py = ai * Ay + aj * By;
 									Py = Py / aij;
-									Pz = ai * Az + aj * Bz;
+									auto Pz = ai * Az + aj * Bz;
 									Pz = Pz / aij;
 
 									Eijx.zero();
@@ -1599,33 +1566,31 @@ int main(int argc, char *argv[]) {
 									CalcEijt(Eijy);
 									CalcEijt(Eijz);
 
-									EABx0_1 = EABx0 * exp(-ai * aj * ABx * ABx / aij);
-									EABy0_1 = EABy0 * exp(-ai * aj * ABy * ABy / aij);
-									EABz0_1 = EABz0 * exp(-ai * aj * ABz * ABz / aij);
-									EABxyz = EABx0_1 * EABy0_1 * EABz0_1;
-
-									kPP = kPx * Px + kPy * Py + kPz * Pz;
+									auto EABx0_1 = EABx0 * exp(-ai * aj * ABx * ABx / aij);
+									auto EABy0_1 = EABy0 * exp(-ai * aj * ABy * ABy / aij);
+									auto EABz0_1 = EABz0 * exp(-ai * aj * ABz * ABz / aij);
+									auto EABxyz = EABx0_1 * EABy0_1 * EABz0_1;
 
 									half_trans.zero();
 
 									/* loop over contractions - shell K */
 									for (usint k3 = 0; k3 < basis[k].alphaA.size(); k3++) {
-										ak = basis[k].alphaA[k3];
-										dk = basis[k].dA_re[k3] - I * basis[k].dA_im[k3];
+										auto ak = basis[k].alphaA[k3];
+										auto dk = basis[k].dA_re[k3] - I * basis[k].dA_im[k3];
 
 										/* loop over contractions - shell L */
 										for (usint k4 = 0; k4 < basis[l].alphaA.size(); k4++) {
-											al = basis[l].alphaA[k4];
-											dl = basis[l].dA_re[k4] + I * basis[l].dA_im[k4];
+											auto al = basis[l].alphaA[k4];
+											auto dl = basis[l].dA_re[k4] + I * basis[l].dA_im[k4];
 
-											akl = ak + al;
-											dkl = dk * dl;
+											auto akl = ak + al;
+											auto dkl = dk * dl;
 
-											Qx = ak * Cx + al * Dx;
+											auto Qx = ak * Cx + al * Dx;
 											Qx = Qx / akl;
-											Qy = ak * Cy + al * Dy;
+											auto Qy = ak * Cy + al * Dy;
 											Qy = Qy / akl;
-											Qz = ak * Cz + al * Dz;
+											auto Qz = ak * Cz + al * Dz;
 											Qz = Qz / akl;
 
 											Eklx.zero();
@@ -1641,12 +1606,10 @@ int main(int argc, char *argv[]) {
 											CalcEijt(Ekly);
 											CalcEijt(Eklz);
 
-											ECDx0_1 = ECDx0 * exp(-ak * al * CDx * CDx / akl);
-											ECDy0_1 = ECDy0 * exp(-ak * al * CDy * CDy / akl);
-											ECDz0_1 = ECDz0 * exp(-ak * al * CDz * CDz / akl);
-											ECDxyz = ECDx0_1 * ECDy0_1 * ECDz0_1;
-
-											kQQ = kQx * Qx + kQy * Qy + kQz * Qz;
+											auto ECDx0_1 = ECDx0 * exp(-ak * al * CDx * CDx / akl);
+											auto ECDy0_1 = ECDy0 * exp(-ak * al * CDy * CDy / akl);
+											auto ECDz0_1 = ECDz0 * exp(-ak * al * CDz * CDz / akl);
+											auto ECDxyz = ECDx0_1 * ECDy0_1 * ECDz0_1;
 
 											/* calculate the R integrals for ERI */
 											R_ERI.zero();
@@ -1655,25 +1618,25 @@ int main(int argc, char *argv[]) {
 											CalcRERI(R_ERI);
 											///R_ERI.print();
 
-											ic = 0;
-											jc = 0;
+											int ic = 0;
+											int jc = 0;
 											/* loop over Cartesian components - shell K */
-											for (mk = 0; mk < shgk; mk++) {
-												kc = lk - ic - jc;
-												id = 0;
-												jd = 0;
+											for (usint mk = 0; mk < shgk; mk++) {
+												auto kc = lk - ic - jc;
+												int id = 0;
+												int jd = 0;
 												/* loop over Cartesian components - shell L */
-												for (ml = 0; ml < shgl; ml++) {
-													kd = ll - id - jd;
+												for (usint ml = 0; ml < shgl; ml++) {
+													auto kd = ll - id - jd;
 
 													for (int t1 = 0; t1 <= lij; t1++) {
 														for (int u1 = 0; u1 <= lij - t1; u1++) {
 															for (int v1 = 0; v1 <= lij - t1 - u1; v1++) {
-																tmp3s = 0.0;
+																cdouble tmp3s = 0.0;
 																for (int t2 = 0; t2 <= ic + id; t2++) {
-																	tmp2s = 0.0;
+																	cdouble tmp2s = 0.0;
 																	for (int u2 = 0; u2 <= jc + jd; u2++) {
-																		tmp1s = 0.0;
+																		cdouble tmp1s = 0.0;
 																		for (int v2 = 0; v2 <= kc + kd; v2++) {
 																			tmp1s += R_ERI.R2E[t1][u1][v1][t2][u2][v2] * Eklz.v[kc][kd][v2];
 																		};
@@ -1702,35 +1665,31 @@ int main(int argc, char *argv[]) {
 										};
 									};
 
-									ia = 0;
-									ja = 0;
+									int ia = 0;
+									int ja = 0;
 									/* loop over Cartesian components - shell I */
-									for (mi = 0; mi < shgi; mi++) {
-										ka = li - ia - ja;
+									for (usint mi = 0; mi < shgi; mi++) {
+										auto ka = li - ia - ja;
 
-										ib = 0;
-										jb = 0;
+										int ib = 0;
+										int jb = 0;
 										/* loop over Cartesian components - shell J */
-										for (mj = 0; mj < shgj; mj++) {
-											kb = lj - ib - jb;
+										for (usint mj = 0; mj < shgj; mj++) {
+											auto kb = lj - ib - jb;
 
-											ic = 0;
-											jc = 0;
+											int ic = 0;
+											int jc = 0;
 											/* loop over Cartesian components - shell K */
-											for (mk = 0; mk < shgk; mk++) {
-												kc = lk - ic - jc;
-
-												id = 0;
-												jd = 0;
+											for (usint mk = 0; mk < shgk; mk++) {
+												int id = 0;
+												int jd = 0;
 												/* loop over Cartesian components - shell L */
-												for (ml = 0; ml < shgl; ml++) {
-													kd = ll - id - jd;
-
-													tmp3s = 0.0;
+												for (usint ml = 0; ml < shgl; ml++) {
+													cdouble tmp3s = 0.0;
 													for (int t1 = 0; t1 <= ia + ib; t1++) {
-														tmp2s = 0.0;
+														cdouble tmp2s = 0.0;
 														for (int u1 = 0; u1 <= ja + jb; u1++) {
-															tmp1s = 0.0;
+															cdouble tmp1s = 0.0;
 															for (int v1 = 0; v1 <= ka + kb; v1++) {
 																tmp1s += half_trans.v[t1][u1][v1][mk][ml] * Eijz.v[ka][kb][v1];
 															};
@@ -1770,30 +1729,22 @@ int main(int argc, char *argv[]) {
 							};
 
 							/* rescale to fix the angular normalisation */
-							ia = 0;
-							ja = 0;
+							int ia = 0;
+							int ja = 0;
 							/* loop over Cartesian components - shell I */
-							for (mi = 0; mi < shgi; mi++) {
-								ka = li - ia - ja;
-
-								ib = 0;
-								jb = 0;
+							for (usint mi = 0; mi < shgi; mi++) {
+								int ib = 0;
+								int jb = 0;
 								/* loop over Cartesian components - shell J */
-								for (mj = 0; mj < shgj; mj++) {
-									kb = lj - ib - jb;
-
-									ic = 0;
-									jc = 0;
+								for (usint mj = 0; mj < shgj; mj++) {
+									int ic = 0;
+									int jc = 0;
 									/* loop over Cartesian components - shell K */
-									for (mk = 0; mk < shgk; mk++) {
-										kc = lk - ic - jc;
-
-										id = 0;
-										jd = 0;
+									for (usint mk = 0; mk < shgk; mk++) {
+										int id = 0;
+										int jd = 0;
 										/* loop over Cartesian components - shell L */
-										for (ml = 0; ml < shgl; ml++) {
-											kd = ll - id - jd;
-
+										for (usint ml = 0; ml < shgl; ml++) {
 											full_trans_crt.v[mi][mj][mk][ml] = full_trans_crt.v[mi][mj][mk][ml] / xyz_norm[li][mi] / xyz_norm[lj][mj] / xyz_norm[lk][mk] / xyz_norm[ll][ml];
 
 											jd++;
@@ -1833,7 +1784,9 @@ int main(int argc, char *argv[]) {
 							                           poskmx_crt, poslmx_crt,
 							                           i, j, k, l);
 #pragma omp critical
-							full_trans_crt.to_disk(tot_2E, keys.thrsh, ofs_2E);
+							{
+								full_trans_crt.to_disk(tot_2E, keys.thrsh, ofs_2E);
+							}
 
 							///full_trans_crt.print();
 
