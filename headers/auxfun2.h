@@ -6,6 +6,7 @@
 #include <cmath>
 #include <vector>
 #include <complex>
+#include <fstream>
 
 #include "../headers/gtopw.h"
 
