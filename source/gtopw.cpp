@@ -1437,7 +1437,7 @@ int main(int argc, char *argv[]) {
 		llint tot_2E = 0;
 
 		posimx_crt = 0;
-		int *posimx_crt_v = new int[basis.size()];
+		vector<int> posimx_crt_v(basis.size());
 
 		for (int i = 0; i < basis.size(); ++i) {
 			posimx_crt_v[i] = posimx_crt;
@@ -1451,55 +1451,60 @@ int main(int argc, char *argv[]) {
 				cout << " Using " << omp_get_num_threads() << " threads.\n";
 			}
 
-			/* loop over the shells I */
-			#pragma omp for schedule(dynamic, 1) collapse(2)
+			/* loop over the shells I, J, K, L*/
+			#pragma omp for schedule(dynamic, 1) collapse(4)
 			for (int i = 0; i < basis.size(); i++)
-				for (int j = 0; j < basis.size(); j++) {
-					if (j > i) continue;
+				for (int j = 0; j < basis.size(); j++)
+					for (int k = 0; k < basis.size(); k++)
+						for (int l = 0; l < basis.size(); l++) {
 
-					auto li = basis[i].lA;
-					auto Ax = basis[i].Ax;
-					auto Ay = basis[i].Ay;
-					auto Az = basis[i].Az;
+							if (j > i) continue;
+							if (k > i) continue;
+							int lmax = (i == k) ? j + 1 : basis.size();
+							if (l >= lmax) continue;
 
-					auto shgi = crt_siz[li];
+							/* shell I */
+							auto li = basis[i].lA;
+							auto Ax = basis[i].Ax;
+							auto Ay = basis[i].Ay;
+							auto Az = basis[i].Az;
 
-					auto lj = basis[j].lA;
-					auto Bx = basis[j].Ax;
-					auto By = basis[j].Ay;
-					auto Bz = basis[j].Az;
+							auto shgi = crt_siz[li];
 
-					auto kPx = basis[j].kx - basis[i].kx;
-					auto kPy = basis[j].ky - basis[i].ky;
-					auto kPz = basis[j].kz - basis[i].kz;
+							/* shell J */
+							auto lj = basis[j].lA;
+							auto Bx = basis[j].Ax;
+							auto By = basis[j].Ay;
+							auto Bz = basis[j].Az;
 
-					auto ABx = Ax - Bx;
-					auto ABy = Ay - By;
-					auto ABz = Az - Bz;
+							auto kPx = basis[j].kx - basis[i].kx;
+							auto kPy = basis[j].ky - basis[i].ky;
+							auto kPz = basis[j].kz - basis[i].kz;
 
-					auto EABx0 = exp(I * (basis[i].kx * Ax - basis[j].kx * Bx));
-					auto EABy0 = exp(I * (basis[i].ky * Ay - basis[j].ky * By));
-					auto EABz0 = exp(I * (basis[i].kz * Az - basis[j].kz * Bz));
+							auto ABx = Ax - Bx;
+							auto ABy = Ay - By;
+							auto ABz = Az - Bz;
 
-					auto lij = li + lj;
-					auto shgj = crt_siz[lj];
+							auto EABx0 = exp(I * (basis[i].kx * Ax - basis[j].kx * Bx));
+							auto EABy0 = exp(I * (basis[i].ky * Ay - basis[j].ky * By));
+							auto EABz0 = exp(I * (basis[i].kz * Az - basis[j].kz * Bz));
 
-					ECoefs<double> Eijx(li, lj, dum, dum, ABx);
-					ECoefs<double> Eijy(li, lj, dum, dum, ABy);
-					ECoefs<double> Eijz(li, lj, dum, dum, ABz);
+							auto lij = li + lj;
+							auto shgj = crt_siz[lj];
 
-					/* loop over the shells K */
-					for (usint k = 0; k <= i; k++) {
-						auto lk = basis[k].lA;
-						auto Cx = basis[k].Ax;
-						auto Cy = basis[k].Ay;
-						auto Cz = basis[k].Az;
+							ECoefs<double> Eijx(li, lj, dum, dum, ABx);
+							ECoefs<double> Eijy(li, lj, dum, dum, ABy);
+							ECoefs<double> Eijz(li, lj, dum, dum, ABz);
 
-						auto shgk = crt_siz[lk];
+							/* shell K */
+							auto lk = basis[k].lA;
+							auto Cx = basis[k].Ax;
+							auto Cy = basis[k].Ay;
+							auto Cz = basis[k].Az;
 
-						/* loop over the shells L */
-						usint lmax = (i == k) ? j + 1 : basis.size();
-						for (usint l = 0; l < lmax; l++) {
+							auto shgk = crt_siz[lk];
+
+							/* shell L */
 							auto ll = basis[l].lA;
 							auto Dx = basis[l].Ax;
 							auto Dy = basis[l].Ay;
@@ -1787,15 +1792,10 @@ int main(int argc, char *argv[]) {
 							}
 
 							///full_trans_crt.print();
-
 						};
-					};
-				};
 		}
 
 		ofs_2E.close();
-		delete[] posimx_crt_v;
-
 		cout << " Total number of two-electron integrals = " << tot_2E << endl;
 	};
 
