@@ -6,8 +6,20 @@
 #include <cmath>
 #include <vector>
 #include <complex>
+#include <fstream>
 
 #include "../headers/gtopw.h"
+
+
+inline bool is_unique(int i, int j, int k, int l) {
+    if(i+j-k-l >= 0 && i-j+k-l >= 0 && -i+j+k-l >= 0)
+        return true;
+    if(i+j-k-l < 0 && i-j+k-l < 0 && -i+j+k-l < 0)
+        return true;
+
+    return false;
+}
+
 
 template <class type> class FullC {
     public:
@@ -348,6 +360,7 @@ template <class type> class RInts2E {
 };
 
 void CalcRERI( RInts2E <cdouble> & R );
+
 
 
 
