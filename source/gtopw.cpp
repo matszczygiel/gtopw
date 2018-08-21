@@ -1444,15 +1444,15 @@ int main(int argc, char *argv[]) {
 			posimx_crt += crt_siz[basis[i].lA];
 		}
 
-#pragma omp parallel shared(keys, tot_2E, ofs_2E)
+		#pragma omp parallel shared(keys, tot_2E, ofs_2E, basis)
 		{
-#pragma omp single
+			#pragma omp single
 			{
 				cout << " Using " << omp_get_num_threads() << " threads.\n";
 			}
 
-/* loop over the shells I */
-#pragma omp for schedule(dynamic, 1) collapse(2)
+			/* loop over the shells I */
+			#pragma omp for schedule(dynamic, 1) collapse(2)
 			for (int i = 0; i < basis.size(); i++)
 				for (int j = 0; j < basis.size(); j++) {
 					if (j > i) continue;
@@ -1489,7 +1489,6 @@ int main(int argc, char *argv[]) {
 					ECoefs<double> Eijz(li, lj, dum, dum, ABz);
 
 					/* loop over the shells K */
-					int poskmx_crt = 0;
 					for (usint k = 0; k <= i; k++) {
 						auto lk = basis[k].lA;
 						auto Cx = basis[k].Ax;
@@ -1500,7 +1499,6 @@ int main(int argc, char *argv[]) {
 
 						/* loop over the shells L */
 						usint lmax = (i == k) ? j + 1 : basis.size();
-						int poslmx_crt = 0;
 						for (usint l = 0; l < lmax; l++) {
 							auto ll = basis[l].lA;
 							auto Dx = basis[l].Ax;
@@ -1781,18 +1779,16 @@ int main(int argc, char *argv[]) {
 
 							/* write down */
 							full_trans_crt.load_pos_mx(posimx_crt_v[i], posimx_crt_v[j],
-							                           poskmx_crt, poslmx_crt,
+							                           posimx_crt_v[k], posimx_crt_v[l],
 							                           i, j, k, l);
-#pragma omp critical
+							#pragma omp critical
 							{
 								full_trans_crt.to_disk(tot_2E, keys.thrsh, ofs_2E);
 							}
 
 							///full_trans_crt.print();
 
-							poslmx_crt += shgl;
 						};
-						poskmx_crt += shgk;
 					};
 				};
 		}
