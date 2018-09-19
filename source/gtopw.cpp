@@ -1464,66 +1464,66 @@ int main(int argc, char *argv[]) {
 							if (l >= lmax) continue;
 
 							/* shell I */
-							auto li = basis[i].lA;
-							auto Ax = basis[i].Ax;
-							auto Ay = basis[i].Ay;
-							auto Az = basis[i].Az;
+							const auto& li = basis[i].lA;
+							const auto& Ax = basis[i].Ax;
+							const auto& Ay = basis[i].Ay;
+							const auto& Az = basis[i].Az;
 
-							auto shgi = crt_siz[li];
+							const auto& shgi = crt_siz[li];
 
 							/* shell J */
-							auto lj = basis[j].lA;
-							auto Bx = basis[j].Ax;
-							auto By = basis[j].Ay;
-							auto Bz = basis[j].Az;
+							const auto& lj = basis[j].lA;
+							const auto& Bx = basis[j].Ax;
+							const auto& By = basis[j].Ay;
+							const auto& Bz = basis[j].Az;
 
-							auto kPx = basis[j].kx - basis[i].kx;
-							auto kPy = basis[j].ky - basis[i].ky;
-							auto kPz = basis[j].kz - basis[i].kz;
+							const auto& kPx = basis[j].kx - basis[i].kx;
+							const auto& kPy = basis[j].ky - basis[i].ky;
+							const auto& kPz = basis[j].kz - basis[i].kz;
 
-							auto ABx = Ax - Bx;
-							auto ABy = Ay - By;
-							auto ABz = Az - Bz;
+							const auto ABx = Ax - Bx;
+							const auto ABy = Ay - By;
+							const auto ABz = Az - Bz;
 
-							auto EABx0 = exp(I * (basis[i].kx * Ax - basis[j].kx * Bx));
-							auto EABy0 = exp(I * (basis[i].ky * Ay - basis[j].ky * By));
-							auto EABz0 = exp(I * (basis[i].kz * Az - basis[j].kz * Bz));
+							const auto EABx0 = exp(I * (basis[i].kx * Ax - basis[j].kx * Bx));
+							const auto EABy0 = exp(I * (basis[i].ky * Ay - basis[j].ky * By));
+							const auto EABz0 = exp(I * (basis[i].kz * Az - basis[j].kz * Bz));
 
-							auto lij = li + lj;
-							auto shgj = crt_siz[lj];
+							const auto lij = li + lj;
+							const auto& shgj = crt_siz[lj];
 
 							ECoefs<double> Eijx(li, lj, dum, dum, ABx);
 							ECoefs<double> Eijy(li, lj, dum, dum, ABy);
 							ECoefs<double> Eijz(li, lj, dum, dum, ABz);
 
 							/* shell K */
-							auto lk = basis[k].lA;
-							auto Cx = basis[k].Ax;
-							auto Cy = basis[k].Ay;
-							auto Cz = basis[k].Az;
+							const auto& lk = basis[k].lA;
+							const auto& Cx = basis[k].Ax;
+							const auto& Cy = basis[k].Ay;
+							const auto& Cz = basis[k].Az;
 
-							auto shgk = crt_siz[lk];
+							const auto& shgk = crt_siz[lk];
 
 							/* shell L */
-							auto ll = basis[l].lA;
-							auto Dx = basis[l].Ax;
-							auto Dy = basis[l].Ay;
-							auto Dz = basis[l].Az;
+							const auto& ll = basis[l].lA;
+							const auto& Dx = basis[l].Ax;
+							const auto& Dy = basis[l].Ay;
+							const auto& Dz = basis[l].Az;
 
-							auto kQx = basis[l].kx - basis[k].kx;
-							auto kQy = basis[l].ky - basis[k].ky;
-							auto kQz = basis[l].kz - basis[k].kz;
+							const auto& kQx = basis[l].kx - basis[k].kx;
+							const auto& kQy = basis[l].ky - basis[k].ky;
+							const auto& kQz = basis[l].kz - basis[k].kz;
 
-							auto CDx = Cx - Dx;
-							auto CDy = Cy - Dy;
-							auto CDz = Cz - Dz;
+							const auto CDx = Cx - Dx;
+							const auto CDy = Cy - Dy;
+							const auto CDz = Cz - Dz;
 
-							auto ECDx0 = exp(I * (basis[i].kx * Ax - basis[j].kx * Bx));
-							auto ECDy0 = exp(I * (basis[i].ky * Ay - basis[j].ky * By));
-							auto ECDz0 = exp(I * (basis[i].kz * Az - basis[j].kz * Bz));
+							const auto ECDx0 = exp(I * (basis[i].kx * Ax - basis[j].kx * Bx));
+							const auto ECDy0 = exp(I * (basis[i].ky * Ay - basis[j].ky * By));
+							const auto ECDz0 = exp(I * (basis[i].kz * Az - basis[j].kz * Bz));
 
-							auto lkl = lk + ll;
-							auto shgl = crt_siz[ll];
+							const auto lkl = lk + ll;
+							const auto& shgl = crt_siz[ll];
 
 							ECoefs<double> Eklx(lk, ll, dum, dum, CDx);
 							ECoefs<double> Ekly(lk, ll, dum, dum, CDy);
@@ -1538,16 +1538,16 @@ int main(int argc, char *argv[]) {
 
 							/* loop over contractions - shell I */
 							for (usint k1 = 0; k1 < basis[i].alphaA.size(); k1++) {
-								auto ai = basis[i].alphaA[k1];
-								auto di = basis[i].dA_re[k1] - I * basis[i].dA_im[k1];
+								const auto& ai = basis[i].alphaA[k1];
+								const auto di = basis[i].dA_re[k1] - I * basis[i].dA_im[k1];
 
 								/* loop over contractions - shell J */
 								for (usint k2 = 0; k2 < basis[j].alphaA.size(); k2++) {
-									auto aj = basis[j].alphaA[k2];
-									auto dj = basis[j].dA_re[k2] + I * basis[j].dA_im[k2];
+									const auto& aj = basis[j].alphaA[k2];
+									const auto dj = basis[j].dA_re[k2] + I * basis[j].dA_im[k2];
 
-									auto aij = ai + aj;
-									auto dij = di * dj;
+									const auto aij = ai + aj;
+									const auto dij = di * dj;
 
 									auto Px = ai * Ax + aj * Bx;
 									Px = Px / aij;
@@ -1569,25 +1569,25 @@ int main(int argc, char *argv[]) {
 									CalcEijt(Eijy);
 									CalcEijt(Eijz);
 
-									auto EABx0_1 = EABx0 * exp(-ai * aj * ABx * ABx / aij);
-									auto EABy0_1 = EABy0 * exp(-ai * aj * ABy * ABy / aij);
-									auto EABz0_1 = EABz0 * exp(-ai * aj * ABz * ABz / aij);
-									auto EABxyz = EABx0_1 * EABy0_1 * EABz0_1;
+									const auto EABx0_1 = EABx0 * exp(-ai * aj * ABx * ABx / aij);
+									const auto EABy0_1 = EABy0 * exp(-ai * aj * ABy * ABy / aij);
+									const auto EABz0_1 = EABz0 * exp(-ai * aj * ABz * ABz / aij);
+									const auto EABxyz = EABx0_1 * EABy0_1 * EABz0_1;
 
 									half_trans.zero();
 
 									/* loop over contractions - shell K */
 									for (usint k3 = 0; k3 < basis[k].alphaA.size(); k3++) {
-										auto ak = basis[k].alphaA[k3];
-										auto dk = basis[k].dA_re[k3] - I * basis[k].dA_im[k3];
+										const auto& ak = basis[k].alphaA[k3];
+										const auto dk = basis[k].dA_re[k3] - I * basis[k].dA_im[k3];
 
 										/* loop over contractions - shell L */
 										for (usint k4 = 0; k4 < basis[l].alphaA.size(); k4++) {
-											auto al = basis[l].alphaA[k4];
-											auto dl = basis[l].dA_re[k4] + I * basis[l].dA_im[k4];
+											const auto& al = basis[l].alphaA[k4];
+											const auto dl = basis[l].dA_re[k4] + I * basis[l].dA_im[k4];
 
-											auto akl = ak + al;
-											auto dkl = dk * dl;
+											const auto akl = ak + al;
+											const auto dkl = dk * dl;
 
 											auto Qx = ak * Cx + al * Dx;
 											Qx = Qx / akl;
@@ -1609,17 +1609,17 @@ int main(int argc, char *argv[]) {
 											CalcEijt(Ekly);
 											CalcEijt(Eklz);
 
-											auto ECDx0_1 = ECDx0 * exp(-ak * al * CDx * CDx / akl);
-											auto ECDy0_1 = ECDy0 * exp(-ak * al * CDy * CDy / akl);
-											auto ECDz0_1 = ECDz0 * exp(-ak * al * CDz * CDz / akl);
-											auto ECDxyz = ECDx0_1 * ECDy0_1 * ECDz0_1;
+											const auto ECDx0_1 = ECDx0 * exp(-ak * al * CDx * CDx / akl);
+											const auto ECDy0_1 = ECDy0 * exp(-ak * al * CDy * CDy / akl);
+											const auto ECDz0_1 = ECDz0 * exp(-ak * al * CDz * CDz / akl);
+											const auto ECDxyz = ECDx0_1 * ECDy0_1 * ECDz0_1;
 
 											/* calculate the R integrals for ERI */
 											R_ERI.zero();
 											R_ERI.load(kPx, kPy, kPz, kQx, kQy, kQz,
 											           Px, Py, Pz, Qx, Qy, Qz, aij, akl);
 											CalcRERI(R_ERI);
-											///R_ERI.print();
+											//R_ERI.print();
 
 											int ic = 0;
 											int jc = 0;
@@ -1748,7 +1748,7 @@ int main(int argc, char *argv[]) {
 										int jd = 0;
 										/* loop over Cartesian components - shell L */
 										for (usint ml = 0; ml < shgl; ml++) {
-											full_trans_crt.v[mi][mj][mk][ml] = full_trans_crt.v[mi][mj][mk][ml] / xyz_norm[li][mi] / xyz_norm[lj][mj] / xyz_norm[lk][mk] / xyz_norm[ll][ml];
+											full_trans_crt.v[mi][mj][mk][ml] /=  xyz_norm[li][mi] * xyz_norm[lj][mj] * xyz_norm[lk][mk] * xyz_norm[ll][ml];
 
 											jd++;
 											if (jd > ll - id) {
