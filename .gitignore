@@ -1,3 +1,5 @@
 xgtopw
 object/
 *.F
+path/
+build
