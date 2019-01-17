@@ -353,39 +353,35 @@ void CalcEijt(ECoefs<double>& E) {
 
 void RenormContr(GaussC& gau_tmp, const string norm_name) {
 	/* renormalise the Gaussian contraction */
-	double num, den, fra, norm;
-	double d1_re, d2_re, d1_im, d2_im;
-	num = 0;
-	den = 0;
-	fra = 0;
+	double fra = 0;
 
 	for (int i = 0; i < gau_tmp.clen; i++) {
 		for (int j = 0; j < gau_tmp.clen; j++) {
-			d1_re = gau_tmp.dA_re[i] * pow(2.0 * gau_tmp.alphaA[i] / M_PI, 0.75);
-			d1_re = d1_re * pow(2.0 * sqrt(gau_tmp.alphaA[i]), gau_tmp.lA) / sqrt(dfact[gau_tmp.lA]);
+			double d1_re = gau_tmp.dA_re[i] * pow(2.0 * gau_tmp.alphaA[i] / M_PI, 0.75);
+			d1_re *= pow(2.0 * sqrt(gau_tmp.alphaA[i]), gau_tmp.lA) / sqrt(dfact[gau_tmp.lA]);
 
-			d2_re = gau_tmp.dA_re[j] * pow(2.0 * gau_tmp.alphaA[j] / M_PI, 0.75);
-			d2_re = d2_re * pow(2.0 * sqrt(gau_tmp.alphaA[j]), gau_tmp.lA) / sqrt(dfact[gau_tmp.lA]);
+			double d2_re = gau_tmp.dA_re[j] * pow(2.0 * gau_tmp.alphaA[j] / M_PI, 0.75);
+			d2_re *= pow(2.0 * sqrt(gau_tmp.alphaA[j]), gau_tmp.lA) / sqrt(dfact[gau_tmp.lA]);
 
-			d1_im = gau_tmp.dA_im[i] * pow(2.0 * gau_tmp.alphaA[i] / M_PI, 0.75);
-			d1_im = d1_im * pow(2.0 * sqrt(gau_tmp.alphaA[i]), gau_tmp.lA) / sqrt(dfact[gau_tmp.lA]);
+			double d1_im = gau_tmp.dA_im[i] * pow(2.0 * gau_tmp.alphaA[i] / M_PI, 0.75);
+			d1_im *= pow(2.0 * sqrt(gau_tmp.alphaA[i]), gau_tmp.lA) / sqrt(dfact[gau_tmp.lA]);
 
-			d2_im = gau_tmp.dA_im[j] * pow(2.0 * gau_tmp.alphaA[j] / M_PI, 0.75);
-			d2_im = d2_im * pow(2.0 * sqrt(gau_tmp.alphaA[j]), gau_tmp.lA) / sqrt(dfact[gau_tmp.lA]);
+			double d2_im = gau_tmp.dA_im[j] * pow(2.0 * gau_tmp.alphaA[j] / M_PI, 0.75);
+			d2_im *= pow(2.0 * sqrt(gau_tmp.alphaA[j]), gau_tmp.lA) / sqrt(dfact[gau_tmp.lA]);
 
-			num = d1_re * d2_re + d1_im * d2_im;
-			den = pow(gau_tmp.alphaA[i] + gau_tmp.alphaA[j], 1.5 + gau_tmp.lA);
+			double num = d1_re * d2_re + d1_im * d2_im;
+			double den = pow(gau_tmp.alphaA[i] + gau_tmp.alphaA[j], 1.5 + gau_tmp.lA);
 			fra += num / den;
 		};
 	};
 
-	norm = pow(M_PI, -0.75) * pow(2.0, 0.5 * gau_tmp.lA) / sqrt(fra);
+	double norm = pow(M_PI, -0.75) * pow(2.0, 0.5 * gau_tmp.lA) / sqrt(fra);
 	for (int i = 0; i < gau_tmp.clen; i++) {
-		gau_tmp.dA_re[i] = gau_tmp.dA_re[i] * norm * pow(2.0 * gau_tmp.alphaA[i] / M_PI, 0.75);
-		gau_tmp.dA_re[i] = gau_tmp.dA_re[i] * pow(2.0 * sqrt(gau_tmp.alphaA[i]), gau_tmp.lA) / sqrt(dfact[gau_tmp.lA]);
+		gau_tmp.dA_re[i] *= norm * pow(2.0 * gau_tmp.alphaA[i] / M_PI, 0.75);
+		gau_tmp.dA_re[i] *= pow(2.0 * sqrt(gau_tmp.alphaA[i]), gau_tmp.lA) / sqrt(dfact[gau_tmp.lA]);
 
-		gau_tmp.dA_im[i] = gau_tmp.dA_im[i] * norm * pow(2.0 * gau_tmp.alphaA[i] / M_PI, 0.75);
-		gau_tmp.dA_im[i] = gau_tmp.dA_im[i] * pow(2.0 * sqrt(gau_tmp.alphaA[i]), gau_tmp.lA) / sqrt(dfact[gau_tmp.lA]);
+		gau_tmp.dA_im[i] *= norm * pow(2.0 * gau_tmp.alphaA[i] / M_PI, 0.75);
+		gau_tmp.dA_im[i] *= pow(2.0 * sqrt(gau_tmp.alphaA[i]), gau_tmp.lA) / sqrt(dfact[gau_tmp.lA]);
 	};
 
 	ofstream ofs_norm(norm_name, std::ios::out | std::ios::binary | std::ios_base::app);
@@ -395,7 +391,7 @@ void RenormContr(GaussC& gau_tmp, const string norm_name) {
 	}
 
 	for (int mi = 0; mi < crt_siz[gau_tmp.lA]; mi++) {
-		fra = norm / xyz_norm[gau_tmp.lA][mi];
+		fra = norm / sqrt(dfact[gau_tmp.lA]);
 		ofs_norm.write(reinterpret_cast<char*>(&fra), sizeof(double));
 	};
 	ofs_norm.close();

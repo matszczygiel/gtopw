@@ -697,8 +697,10 @@ int main(int argc, char *argv[]) {
 							};
 
 							/* overlap integrals */
-							shl_crt_s[mi * shgj + mj] += hash_fill[6][6] * dij * Exyz;
-
+							if(keys.stvh) {
+								shl_crt_s[mi * shgj + mj] += hash_fill[6][6] * dij * Exyz;
+							}
+							
 							/* kinetic energy integrals */
 							tmp1s = 0.0;
 							tmp2s = 0.0;
@@ -710,11 +712,15 @@ int main(int argc, char *argv[]) {
 
 							tmp3s = (hash_fill[2][2] * kb - 2.0 * aj * hash_fill[2][5] + I * basis[j].kz * hash_fill[2][6]) * ka - (hash_fill[5][2] * kb - 2.0 * aj * hash_fill[5][5] + I * basis[j].kz * hash_fill[5][6]) * 2.0 * ai - (hash_fill[6][2] * kb - 2.0 * aj * hash_fill[6][5] + I * basis[j].kz * hash_fill[6][6]) * I * basis[i].kz;
 
-							shl_crt_t[mi * shgj + mj] += (tmp1s + tmp2s + tmp3s) * dij * Exyz / 2.0;
+							if(keys.stvh) {
+								shl_crt_t[mi * shgj + mj] += (tmp1s + tmp2s + tmp3s) * dij * Exyz / 2.0;
+							}
 
-							shl_crt_tx[mi * shgj + mj] += tmp1s * dij * Exyz / 2.0;
-							shl_crt_ty[mi * shgj + mj] += tmp2s * dij * Exyz / 2.0;
-							shl_crt_tz[mi * shgj + mj] += tmp3s * dij * Exyz / 2.0;
+							if(keys.kinc) {
+								shl_crt_tx[mi * shgj + mj] += tmp1s * dij * Exyz / 2.0;
+								shl_crt_ty[mi * shgj + mj] += tmp2s * dij * Exyz / 2.0;
+								shl_crt_tz[mi * shgj + mj] += tmp3s * dij * Exyz / 2.0;
+							}
 
 							/* dipole moment integrals */
 							if (keys.dip) {
@@ -866,9 +872,11 @@ int main(int argc, char *argv[]) {
 				jb = 0;
 				for (mj = 0; mj < shgj; mj++) {
 					kb = lj - ib - jb;
-					shl_crt_s[mi * shgj + mj] = shl_crt_s[mi * shgj + mj] / xyz_norm[li][mi] / xyz_norm[lj][mj];
-					shl_crt_v[mi * shgj + mj] = shl_crt_v[mi * shgj + mj] / xyz_norm[li][mi] / xyz_norm[lj][mj];
-					shl_crt_t[mi * shgj + mj] = shl_crt_t[mi * shgj + mj] / xyz_norm[li][mi] / xyz_norm[lj][mj];
+					if(keys.stvh) {
+						shl_crt_s[mi * shgj + mj] = shl_crt_s[mi * shgj + mj] / xyz_norm[li][mi] / xyz_norm[lj][mj];
+						shl_crt_v[mi * shgj + mj] = shl_crt_v[mi * shgj + mj] / xyz_norm[li][mi] / xyz_norm[lj][mj];
+						shl_crt_t[mi * shgj + mj] = shl_crt_t[mi * shgj + mj] / xyz_norm[li][mi] / xyz_norm[lj][mj];
+					};
 
 					if (keys.dip) {
 						shl_crt_dx[mi * shgj + mj] = shl_crt_dx[mi * shgj + mj] / xyz_norm[li][mi] / xyz_norm[lj][mj];
@@ -914,9 +922,11 @@ int main(int argc, char *argv[]) {
 			};
 
 			/* transform to the spherical representation */
-			TransToSpher(shl_crt_s.v, shl_sph_s.v, li, lj);
-			TransToSpher(shl_crt_t.v, shl_sph_t.v, li, lj);
-			TransToSpher(shl_crt_v.v, shl_sph_v.v, li, lj);
+			if(keys.stvh) {
+				TransToSpher(shl_crt_s.v, shl_sph_s.v, li, lj);
+				TransToSpher(shl_crt_t.v, shl_sph_t.v, li, lj);
+				TransToSpher(shl_crt_v.v, shl_sph_v.v, li, lj);
+			};
 
 			if (keys.dip) {
 				TransToSpher(shl_crt_dx.v, shl_sph_dx.v, li, lj);
@@ -950,17 +960,19 @@ int main(int argc, char *argv[]) {
 
 			/* switch to the Gamess holy order */
 			if (gamess_order) {
-				shl_crt_dum.zero();
-				GamessHolyOrder(shl_crt_s.v, shl_crt_dum.v, li, lj);
-				memcpy(shl_crt_s.v, shl_crt_dum.v, shl_siz_crt2 * sizeof(cdouble));
+				if(keys.stvh) {
+					shl_crt_dum.zero();
+					GamessHolyOrder(shl_crt_s.v, shl_crt_dum.v, li, lj);
+					memcpy(shl_crt_s.v, shl_crt_dum.v, shl_siz_crt2 * sizeof(cdouble));
 
-				shl_crt_dum.zero();
-				GamessHolyOrder(shl_crt_t.v, shl_crt_dum.v, li, lj);
-				memcpy(shl_crt_t.v, shl_crt_dum.v, shl_siz_crt2 * sizeof(cdouble));
+					shl_crt_dum.zero();
+					GamessHolyOrder(shl_crt_t.v, shl_crt_dum.v, li, lj);
+					memcpy(shl_crt_t.v, shl_crt_dum.v, shl_siz_crt2 * sizeof(cdouble));
 
-				shl_crt_dum.zero();
-				GamessHolyOrder(shl_crt_v.v, shl_crt_dum.v, li, lj);
-				memcpy(shl_crt_v.v, shl_crt_dum.v, shl_siz_crt2 * sizeof(cdouble));
+					shl_crt_dum.zero();
+					GamessHolyOrder(shl_crt_v.v, shl_crt_dum.v, li, lj);
+					memcpy(shl_crt_v.v, shl_crt_dum.v, shl_siz_crt2 * sizeof(cdouble));
+				};
 
 				if (keys.dip) {
 					shl_crt_dum.zero();
@@ -1044,14 +1056,16 @@ int main(int argc, char *argv[]) {
 				for (mj = 0; mj < mjmx; mj++) {
 					indj = posjmx_crt + mj;
 
-					ovrl_crt[indi * num_crt + indj] = shl_crt_s[mi * shgj + mj];
-					ovrl_crt[indj * num_crt + indi] = conj(shl_crt_s[mi * shgj + mj]);
+					if(keys.stvh) {
+						ovrl_crt[indi * num_crt + indj] = shl_crt_s[mi * shgj + mj];
+						ovrl_crt[indj * num_crt + indi] = conj(shl_crt_s[mi * shgj + mj]);
 
-					nuc_crt[indi * num_crt + indj] = shl_crt_v[mi * shgj + mj];
-					nuc_crt[indj * num_crt + indi] = conj(shl_crt_v[mi * shgj + mj]);
+						nuc_crt[indi * num_crt + indj] = shl_crt_v[mi * shgj + mj];
+						nuc_crt[indj * num_crt + indi] = conj(shl_crt_v[mi * shgj + mj]);
 
-					kin_crt[indi * num_crt + indj] = shl_crt_t[mi * shgj + mj];
-					kin_crt[indj * num_crt + indi] = conj(shl_crt_t[mi * shgj + mj]);
+						kin_crt[indi * num_crt + indj] = shl_crt_t[mi * shgj + mj];
+						kin_crt[indj * num_crt + indi] = conj(shl_crt_t[mi * shgj + mj]);
+					};
 
 					if (keys.dip) {
 						dipx_crt[indi * num_crt + indj] = shl_crt_dx[mi * shgj + mj];
@@ -1120,14 +1134,16 @@ int main(int argc, char *argv[]) {
 				for (mj = 0; mj < mjmx; mj++) {
 					indj = posjmx_sph + mj;
 
-					ovrl_sph[indi * num_sph + indj] = shl_sph_s[mi * shj + mj];
-					ovrl_sph[indj * num_sph + indi] = conj(shl_sph_s[mi * shj + mj]);
+					if(keys.stvh) {
+						ovrl_sph[indi * num_sph + indj] = shl_sph_s[mi * shj + mj];
+						ovrl_sph[indj * num_sph + indi] = conj(shl_sph_s[mi * shj + mj]);
 
-					nuc_sph[indi * num_sph + indj] = shl_sph_v[mi * shj + mj];
-					nuc_sph[indj * num_sph + indi] = conj(shl_sph_v[mi * shj + mj]);
+						nuc_sph[indi * num_sph + indj] = shl_sph_v[mi * shj + mj];
+						nuc_sph[indj * num_sph + indi] = conj(shl_sph_v[mi * shj + mj]);
 
-					kin_sph[indi * num_sph + indj] = shl_sph_t[mi * shj + mj];
-					kin_sph[indj * num_sph + indi] = conj(shl_sph_t[mi * shj + mj]);
+						kin_sph[indi * num_sph + indj] = shl_sph_t[mi * shj + mj];
+						kin_sph[indj * num_sph + indi] = conj(shl_sph_t[mi * shj + mj]);
+					};
 
 					if (keys.dip) {
 						dipx_sph[indi * num_sph + indj] = shl_sph_dx[mi * shj + mj];
@@ -1196,11 +1212,13 @@ int main(int argc, char *argv[]) {
 		posimx_sph += shi;
 	};
 
-	for (int i = 0; i < num_crt2; i++)
-		bare_crt[i] = kin_crt[i] + nuc_crt[i];
-	for (int i = 0; i < num_sph2; i++)
-		bare_sph[i] = kin_sph[i] + nuc_sph[i];
-
+	if(keys.stvh) {
+		for (int i = 0; i < num_crt2; ++i)
+			bare_crt[i] = kin_crt[i] + nuc_crt[i];
+		for (int i = 0; i < num_sph2; ++i)
+			bare_sph[i] = kin_sph[i] + nuc_sph[i];
+	};
+	
 	///PrintCMatrix( nuc_crt.v , num_crt );
 	///PrintCMatrix( ovrl_crt.v, num_crt );
 	///PrintCMatrix( kin_crt.v , num_crt );
@@ -1212,41 +1230,44 @@ int main(int argc, char *argv[]) {
 	//PrintCMatrix( ovrl_crt.v, num_crt );
 
 	/* write the one-electron integrals to the disk - cartesian */
-	std::ofstream ofs(keys.file1E, std::ios::out | std::ios::binary);
 
-	/*check the file1E path (MS)*/
-	if (!ofs.is_open()) {
-		cout << "Cannot open file1E!\n";
-		return EXIT_FAILURE;
-	}
+	if(num_ints != 0) {
+		std::ofstream ofs(keys.file1E, std::ios::out | std::ios::binary);
 
-	WriteDown(ovrl_crt.v, num_crt2, ofs);
-	WriteDown(kin_crt.v, num_crt2, ofs);
-	WriteDown(nuc_crt.v, num_crt2, ofs);
-	WriteDown(bare_crt.v, num_crt2, ofs);
+		/*check the file1E path (MS)*/
+		if (!ofs.is_open()) {
+			cout << "Cannot open file1E!\n";
+			return EXIT_FAILURE;
+		}
 
-	WriteDown(dipx_crt.v, num_crt2, ofs);
-	WriteDown(dipy_crt.v, num_crt2, ofs);
-	WriteDown(dipz_crt.v, num_crt2, ofs);
+		WriteDown(ovrl_crt.v, num_crt2, ofs);
+		WriteDown(kin_crt.v, num_crt2, ofs);
+		WriteDown(nuc_crt.v, num_crt2, ofs);
+		WriteDown(bare_crt.v, num_crt2, ofs);
 
-	WriteDown(qdxx_crt.v, num_crt2, ofs);
-	WriteDown(qdyy_crt.v, num_crt2, ofs);
-	WriteDown(qdzz_crt.v, num_crt2, ofs);
-	WriteDown(qdxy_crt.v, num_crt2, ofs);
-	WriteDown(qdxz_crt.v, num_crt2, ofs);
-	WriteDown(qdyz_crt.v, num_crt2, ofs);
+		WriteDown(dipx_crt.v, num_crt2, ofs);
+		WriteDown(dipy_crt.v, num_crt2, ofs);
+		WriteDown(dipz_crt.v, num_crt2, ofs);
 
-	WriteDown(grdx_crt.v, num_crt2, ofs);
-	WriteDown(grdy_crt.v, num_crt2, ofs);
-	WriteDown(grdz_crt.v, num_crt2, ofs);
+		WriteDown(qdxx_crt.v, num_crt2, ofs);
+		WriteDown(qdyy_crt.v, num_crt2, ofs);
+		WriteDown(qdzz_crt.v, num_crt2, ofs);
+		WriteDown(qdxy_crt.v, num_crt2, ofs);
+		WriteDown(qdxz_crt.v, num_crt2, ofs);
+		WriteDown(qdyz_crt.v, num_crt2, ofs);
 
-	WriteDown(tx_crt.v, num_crt2, ofs);
-	WriteDown(ty_crt.v, num_crt2, ofs);
-	WriteDown(tz_crt.v, num_crt2, ofs);
+		WriteDown(grdx_crt.v, num_crt2, ofs);
+		WriteDown(grdy_crt.v, num_crt2, ofs);
+		WriteDown(grdz_crt.v, num_crt2, ofs);
 
-	WriteDown(capi_crt.v, num_crt2, ofs);
+		WriteDown(tx_crt.v, num_crt2, ofs);
+		WriteDown(ty_crt.v, num_crt2, ofs);
+		WriteDown(tz_crt.v, num_crt2, ofs);
 
-	ofs.close();
+		WriteDown(capi_crt.v, num_crt2, ofs);
+
+		ofs.close();
+	};
 
 	/* write the one-electron integrals to the disk - spherical */
 	/*
