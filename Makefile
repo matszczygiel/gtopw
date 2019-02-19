@@ -2,8 +2,8 @@ SDIR = source
 ODIR = object
 
 CXX = g++
-CXXFLAGS = -Ofast -pipe -march=native -Wcomments -Wall -std=c++11 -fopenmp -Wextra -lm -lquadmath -fext-numeric-literals
-LDFLAGS  = -lquadmath -fopenmp -Ofast -pipe -march=native -std=c++11
+CXXFLAGS = -g -O2 -Wcomments -Wall -std=c++11 -fopenmp -Wextra -lm -lquadmath -fext-numeric-literals
+LDFLAGS  = -g -O2 -Wcomments -Wall -std=c++11 -fopenmp -Wextra -lm -lquadmath -fext-numeric-literals
 
 _OBJ = gtopw.o auxfun1.o auxfun2.o caps.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))

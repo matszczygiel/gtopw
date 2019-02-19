@@ -169,7 +169,7 @@ class Keywords
 
     Keywords()
     {
-        stvh = false;
+        stvh = true;
         dip = false;
         quad = false;
         velo = false;
