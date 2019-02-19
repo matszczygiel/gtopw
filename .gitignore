@@ -1,5 +1,6 @@
 xgtopw
 object/
 *.F
+path/
+build
 *inp
-.vscode

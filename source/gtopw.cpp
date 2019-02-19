@@ -697,8 +697,10 @@ int main(int argc, char *argv[]) {
 							};
 
 							/* overlap integrals */
-							shl_crt_s[mi * shgj + mj] += hash_fill[6][6] * dij * Exyz;
-
+							if(keys.stvh) {
+								shl_crt_s[mi * shgj + mj] += hash_fill[6][6] * dij * Exyz;
+							}
+							
 							/* kinetic energy integrals */
 							tmp1s = 0.0;
 							tmp2s = 0.0;
@@ -710,11 +712,15 @@ int main(int argc, char *argv[]) {
 
 							tmp3s = (hash_fill[2][2] * kb - 2.0 * aj * hash_fill[2][5] + I * basis[j].kz * hash_fill[2][6]) * ka - (hash_fill[5][2] * kb - 2.0 * aj * hash_fill[5][5] + I * basis[j].kz * hash_fill[5][6]) * 2.0 * ai - (hash_fill[6][2] * kb - 2.0 * aj * hash_fill[6][5] + I * basis[j].kz * hash_fill[6][6]) * I * basis[i].kz;
 
-							shl_crt_t[mi * shgj + mj] += (tmp1s + tmp2s + tmp3s) * dij * Exyz / 2.0;
+							if(keys.stvh) {
+								shl_crt_t[mi * shgj + mj] += (tmp1s + tmp2s + tmp3s) * dij * Exyz / 2.0;
+							}
 
-							shl_crt_tx[mi * shgj + mj] += tmp1s * dij * Exyz / 2.0;
-							shl_crt_ty[mi * shgj + mj] += tmp2s * dij * Exyz / 2.0;
-							shl_crt_tz[mi * shgj + mj] += tmp3s * dij * Exyz / 2.0;
+							if(keys.kinc) {
+								shl_crt_tx[mi * shgj + mj] += tmp1s * dij * Exyz / 2.0;
+								shl_crt_ty[mi * shgj + mj] += tmp2s * dij * Exyz / 2.0;
+								shl_crt_tz[mi * shgj + mj] += tmp3s * dij * Exyz / 2.0;
+							}
 
 							/* dipole moment integrals */
 							if (keys.dip) {
@@ -866,9 +872,11 @@ int main(int argc, char *argv[]) {
 				jb = 0;
 				for (mj = 0; mj < shgj; mj++) {
 					kb = lj - ib - jb;
-					shl_crt_s[mi * shgj + mj] = shl_crt_s[mi * shgj + mj] / xyz_norm[li][mi] / xyz_norm[lj][mj];
-					shl_crt_v[mi * shgj + mj] = shl_crt_v[mi * shgj + mj] / xyz_norm[li][mi] / xyz_norm[lj][mj];
-					shl_crt_t[mi * shgj + mj] = shl_crt_t[mi * shgj + mj] / xyz_norm[li][mi] / xyz_norm[lj][mj];
+					if(keys.stvh) {
+						shl_crt_s[mi * shgj + mj] = shl_crt_s[mi * shgj + mj] / xyz_norm[li][mi] / xyz_norm[lj][mj];
+						shl_crt_v[mi * shgj + mj] = shl_crt_v[mi * shgj + mj] / xyz_norm[li][mi] / xyz_norm[lj][mj];
+						shl_crt_t[mi * shgj + mj] = shl_crt_t[mi * shgj + mj] / xyz_norm[li][mi] / xyz_norm[lj][mj];
+					};
 
 					if (keys.dip) {
 						shl_crt_dx[mi * shgj + mj] = shl_crt_dx[mi * shgj + mj] / xyz_norm[li][mi] / xyz_norm[lj][mj];
@@ -914,9 +922,11 @@ int main(int argc, char *argv[]) {
 			};
 
 			/* transform to the spherical representation */
-			TransToSpher(shl_crt_s.v, shl_sph_s.v, li, lj);
-			TransToSpher(shl_crt_t.v, shl_sph_t.v, li, lj);
-			TransToSpher(shl_crt_v.v, shl_sph_v.v, li, lj);
+			if(keys.stvh) {
+				TransToSpher(shl_crt_s.v, shl_sph_s.v, li, lj);
+				TransToSpher(shl_crt_t.v, shl_sph_t.v, li, lj);
+				TransToSpher(shl_crt_v.v, shl_sph_v.v, li, lj);
+			};
 
 			if (keys.dip) {
 				TransToSpher(shl_crt_dx.v, shl_sph_dx.v, li, lj);
@@ -950,17 +960,19 @@ int main(int argc, char *argv[]) {
 
 			/* switch to the Gamess holy order */
 			if (gamess_order) {
-				shl_crt_dum.zero();
-				GamessHolyOrder(shl_crt_s.v, shl_crt_dum.v, li, lj);
-				memcpy(shl_crt_s.v, shl_crt_dum.v, shl_siz_crt2 * sizeof(cdouble));
+				if(keys.stvh) {
+					shl_crt_dum.zero();
+					GamessHolyOrder(shl_crt_s.v, shl_crt_dum.v, li, lj);
+					memcpy(shl_crt_s.v, shl_crt_dum.v, shl_siz_crt2 * sizeof(cdouble));
 
-				shl_crt_dum.zero();
-				GamessHolyOrder(shl_crt_t.v, shl_crt_dum.v, li, lj);
-				memcpy(shl_crt_t.v, shl_crt_dum.v, shl_siz_crt2 * sizeof(cdouble));
+					shl_crt_dum.zero();
+					GamessHolyOrder(shl_crt_t.v, shl_crt_dum.v, li, lj);
+					memcpy(shl_crt_t.v, shl_crt_dum.v, shl_siz_crt2 * sizeof(cdouble));
 
-				shl_crt_dum.zero();
-				GamessHolyOrder(shl_crt_v.v, shl_crt_dum.v, li, lj);
-				memcpy(shl_crt_v.v, shl_crt_dum.v, shl_siz_crt2 * sizeof(cdouble));
+					shl_crt_dum.zero();
+					GamessHolyOrder(shl_crt_v.v, shl_crt_dum.v, li, lj);
+					memcpy(shl_crt_v.v, shl_crt_dum.v, shl_siz_crt2 * sizeof(cdouble));
+				};
 
 				if (keys.dip) {
 					shl_crt_dum.zero();
@@ -1044,14 +1056,16 @@ int main(int argc, char *argv[]) {
 				for (mj = 0; mj < mjmx; mj++) {
 					indj = posjmx_crt + mj;
 
-					ovrl_crt[indi * num_crt + indj] = shl_crt_s[mi * shgj + mj];
-					ovrl_crt[indj * num_crt + indi] = conj(shl_crt_s[mi * shgj + mj]);
+					if(keys.stvh) {
+						ovrl_crt[indi * num_crt + indj] = shl_crt_s[mi * shgj + mj];
+						ovrl_crt[indj * num_crt + indi] = conj(shl_crt_s[mi * shgj + mj]);
 
-					nuc_crt[indi * num_crt + indj] = shl_crt_v[mi * shgj + mj];
-					nuc_crt[indj * num_crt + indi] = conj(shl_crt_v[mi * shgj + mj]);
+						nuc_crt[indi * num_crt + indj] = shl_crt_v[mi * shgj + mj];
+						nuc_crt[indj * num_crt + indi] = conj(shl_crt_v[mi * shgj + mj]);
 
-					kin_crt[indi * num_crt + indj] = shl_crt_t[mi * shgj + mj];
-					kin_crt[indj * num_crt + indi] = conj(shl_crt_t[mi * shgj + mj]);
+						kin_crt[indi * num_crt + indj] = shl_crt_t[mi * shgj + mj];
+						kin_crt[indj * num_crt + indi] = conj(shl_crt_t[mi * shgj + mj]);
+					};
 
 					if (keys.dip) {
 						dipx_crt[indi * num_crt + indj] = shl_crt_dx[mi * shgj + mj];
@@ -1120,14 +1134,16 @@ int main(int argc, char *argv[]) {
 				for (mj = 0; mj < mjmx; mj++) {
 					indj = posjmx_sph + mj;
 
-					ovrl_sph[indi * num_sph + indj] = shl_sph_s[mi * shj + mj];
-					ovrl_sph[indj * num_sph + indi] = conj(shl_sph_s[mi * shj + mj]);
+					if(keys.stvh) {
+						ovrl_sph[indi * num_sph + indj] = shl_sph_s[mi * shj + mj];
+						ovrl_sph[indj * num_sph + indi] = conj(shl_sph_s[mi * shj + mj]);
 
-					nuc_sph[indi * num_sph + indj] = shl_sph_v[mi * shj + mj];
-					nuc_sph[indj * num_sph + indi] = conj(shl_sph_v[mi * shj + mj]);
+						nuc_sph[indi * num_sph + indj] = shl_sph_v[mi * shj + mj];
+						nuc_sph[indj * num_sph + indi] = conj(shl_sph_v[mi * shj + mj]);
 
-					kin_sph[indi * num_sph + indj] = shl_sph_t[mi * shj + mj];
-					kin_sph[indj * num_sph + indi] = conj(shl_sph_t[mi * shj + mj]);
+						kin_sph[indi * num_sph + indj] = shl_sph_t[mi * shj + mj];
+						kin_sph[indj * num_sph + indi] = conj(shl_sph_t[mi * shj + mj]);
+					};
 
 					if (keys.dip) {
 						dipx_sph[indi * num_sph + indj] = shl_sph_dx[mi * shj + mj];
@@ -1196,11 +1212,13 @@ int main(int argc, char *argv[]) {
 		posimx_sph += shi;
 	};
 
-	for (int i = 0; i < num_crt2; i++)
-		bare_crt[i] = kin_crt[i] + nuc_crt[i];
-	for (int i = 0; i < num_sph2; i++)
-		bare_sph[i] = kin_sph[i] + nuc_sph[i];
-
+	if(keys.stvh) {
+		for (int i = 0; i < num_crt2; ++i)
+			bare_crt[i] = kin_crt[i] + nuc_crt[i];
+		for (int i = 0; i < num_sph2; ++i)
+			bare_sph[i] = kin_sph[i] + nuc_sph[i];
+	};
+	
 	///PrintCMatrix( nuc_crt.v , num_crt );
 	///PrintCMatrix( ovrl_crt.v, num_crt );
 	///PrintCMatrix( kin_crt.v , num_crt );
@@ -1212,41 +1230,44 @@ int main(int argc, char *argv[]) {
 	//PrintCMatrix( ovrl_crt.v, num_crt );
 
 	/* write the one-electron integrals to the disk - cartesian */
-	std::ofstream ofs(keys.file1E, std::ios::out | std::ios::binary);
 
-	/*check the file1E path (MS)*/
-	if (!ofs.is_open()) {
-		cout << "Cannot open file1E!\n";
-		return EXIT_FAILURE;
-	}
+	if(num_ints != 0) {
+		std::ofstream ofs(keys.file1E, std::ios::out | std::ios::binary);
 
-	WriteDown(ovrl_crt.v, num_crt2, ofs);
-	WriteDown(kin_crt.v, num_crt2, ofs);
-	WriteDown(nuc_crt.v, num_crt2, ofs);
-	WriteDown(bare_crt.v, num_crt2, ofs);
+		/*check the file1E path (MS)*/
+		if (!ofs.is_open()) {
+			cout << "Cannot open file1E!\n";
+			return EXIT_FAILURE;
+		}
 
-	WriteDown(dipx_crt.v, num_crt2, ofs);
-	WriteDown(dipy_crt.v, num_crt2, ofs);
-	WriteDown(dipz_crt.v, num_crt2, ofs);
+		WriteDown(ovrl_crt.v, num_crt2, ofs);
+		WriteDown(kin_crt.v, num_crt2, ofs);
+		WriteDown(nuc_crt.v, num_crt2, ofs);
+		WriteDown(bare_crt.v, num_crt2, ofs);
 
-	WriteDown(qdxx_crt.v, num_crt2, ofs);
-	WriteDown(qdyy_crt.v, num_crt2, ofs);
-	WriteDown(qdzz_crt.v, num_crt2, ofs);
-	WriteDown(qdxy_crt.v, num_crt2, ofs);
-	WriteDown(qdxz_crt.v, num_crt2, ofs);
-	WriteDown(qdyz_crt.v, num_crt2, ofs);
+		WriteDown(dipx_crt.v, num_crt2, ofs);
+		WriteDown(dipy_crt.v, num_crt2, ofs);
+		WriteDown(dipz_crt.v, num_crt2, ofs);
 
-	WriteDown(grdx_crt.v, num_crt2, ofs);
-	WriteDown(grdy_crt.v, num_crt2, ofs);
-	WriteDown(grdz_crt.v, num_crt2, ofs);
+		WriteDown(qdxx_crt.v, num_crt2, ofs);
+		WriteDown(qdyy_crt.v, num_crt2, ofs);
+		WriteDown(qdzz_crt.v, num_crt2, ofs);
+		WriteDown(qdxy_crt.v, num_crt2, ofs);
+		WriteDown(qdxz_crt.v, num_crt2, ofs);
+		WriteDown(qdyz_crt.v, num_crt2, ofs);
 
-	WriteDown(tx_crt.v, num_crt2, ofs);
-	WriteDown(ty_crt.v, num_crt2, ofs);
-	WriteDown(tz_crt.v, num_crt2, ofs);
+		WriteDown(grdx_crt.v, num_crt2, ofs);
+		WriteDown(grdy_crt.v, num_crt2, ofs);
+		WriteDown(grdz_crt.v, num_crt2, ofs);
 
-	WriteDown(capi_crt.v, num_crt2, ofs);
+		WriteDown(tx_crt.v, num_crt2, ofs);
+		WriteDown(ty_crt.v, num_crt2, ofs);
+		WriteDown(tz_crt.v, num_crt2, ofs);
 
-	ofs.close();
+		WriteDown(capi_crt.v, num_crt2, ofs);
+
+		ofs.close();
+	};
 
 	/* write the one-electron integrals to the disk - spherical */
 	/*
@@ -1464,66 +1485,66 @@ int main(int argc, char *argv[]) {
 							if (l >= lmax) continue;
 
 							/* shell I */
-							auto li = basis[i].lA;
-							auto Ax = basis[i].Ax;
-							auto Ay = basis[i].Ay;
-							auto Az = basis[i].Az;
+							const auto& li = basis[i].lA;
+							const auto& Ax = basis[i].Ax;
+							const auto& Ay = basis[i].Ay;
+							const auto& Az = basis[i].Az;
 
-							auto shgi = crt_siz[li];
+							const auto& shgi = crt_siz[li];
 
 							/* shell J */
-							auto lj = basis[j].lA;
-							auto Bx = basis[j].Ax;
-							auto By = basis[j].Ay;
-							auto Bz = basis[j].Az;
+							const auto& lj = basis[j].lA;
+							const auto& Bx = basis[j].Ax;
+							const auto& By = basis[j].Ay;
+							const auto& Bz = basis[j].Az;
 
-							auto kPx = basis[j].kx - basis[i].kx;
-							auto kPy = basis[j].ky - basis[i].ky;
-							auto kPz = basis[j].kz - basis[i].kz;
+							const auto& kPx = basis[j].kx - basis[i].kx;
+							const auto& kPy = basis[j].ky - basis[i].ky;
+							const auto& kPz = basis[j].kz - basis[i].kz;
 
-							auto ABx = Ax - Bx;
-							auto ABy = Ay - By;
-							auto ABz = Az - Bz;
+							const auto ABx = Ax - Bx;
+							const auto ABy = Ay - By;
+							const auto ABz = Az - Bz;
 
-							auto EABx0 = exp(I * (basis[i].kx * Ax - basis[j].kx * Bx));
-							auto EABy0 = exp(I * (basis[i].ky * Ay - basis[j].ky * By));
-							auto EABz0 = exp(I * (basis[i].kz * Az - basis[j].kz * Bz));
+							const auto EABx0 = exp(I * (basis[i].kx * Ax - basis[j].kx * Bx));
+							const auto EABy0 = exp(I * (basis[i].ky * Ay - basis[j].ky * By));
+							const auto EABz0 = exp(I * (basis[i].kz * Az - basis[j].kz * Bz));
 
-							auto lij = li + lj;
-							auto shgj = crt_siz[lj];
+							const auto lij = li + lj;
+							const auto& shgj = crt_siz[lj];
 
 							ECoefs<double> Eijx(li, lj, dum, dum, ABx);
 							ECoefs<double> Eijy(li, lj, dum, dum, ABy);
 							ECoefs<double> Eijz(li, lj, dum, dum, ABz);
 
 							/* shell K */
-							auto lk = basis[k].lA;
-							auto Cx = basis[k].Ax;
-							auto Cy = basis[k].Ay;
-							auto Cz = basis[k].Az;
+							const auto& lk = basis[k].lA;
+							const auto& Cx = basis[k].Ax;
+							const auto& Cy = basis[k].Ay;
+							const auto& Cz = basis[k].Az;
 
-							auto shgk = crt_siz[lk];
+							const auto& shgk = crt_siz[lk];
 
 							/* shell L */
-							auto ll = basis[l].lA;
-							auto Dx = basis[l].Ax;
-							auto Dy = basis[l].Ay;
-							auto Dz = basis[l].Az;
+							const auto& ll = basis[l].lA;
+							const auto& Dx = basis[l].Ax;
+							const auto& Dy = basis[l].Ay;
+							const auto& Dz = basis[l].Az;
 
-							auto kQx = basis[l].kx - basis[k].kx;
-							auto kQy = basis[l].ky - basis[k].ky;
-							auto kQz = basis[l].kz - basis[k].kz;
+							const auto& kQx = basis[l].kx - basis[k].kx;
+							const auto& kQy = basis[l].ky - basis[k].ky;
+							const auto& kQz = basis[l].kz - basis[k].kz;
 
-							auto CDx = Cx - Dx;
-							auto CDy = Cy - Dy;
-							auto CDz = Cz - Dz;
+							const auto CDx = Cx - Dx;
+							const auto CDy = Cy - Dy;
+							const auto CDz = Cz - Dz;
 
-							auto ECDx0 = exp(I * (basis[i].kx * Ax - basis[j].kx * Bx));
-							auto ECDy0 = exp(I * (basis[i].ky * Ay - basis[j].ky * By));
-							auto ECDz0 = exp(I * (basis[i].kz * Az - basis[j].kz * Bz));
+							const auto ECDx0 = exp(I * (basis[i].kx * Ax - basis[j].kx * Bx));
+							const auto ECDy0 = exp(I * (basis[i].ky * Ay - basis[j].ky * By));
+							const auto ECDz0 = exp(I * (basis[i].kz * Az - basis[j].kz * Bz));
 
-							auto lkl = lk + ll;
-							auto shgl = crt_siz[ll];
+							const auto lkl = lk + ll;
+							const auto& shgl = crt_siz[ll];
 
 							ECoefs<double> Eklx(lk, ll, dum, dum, CDx);
 							ECoefs<double> Ekly(lk, ll, dum, dum, CDy);
@@ -1538,16 +1559,16 @@ int main(int argc, char *argv[]) {
 
 							/* loop over contractions - shell I */
 							for (usint k1 = 0; k1 < basis[i].alphaA.size(); k1++) {
-								auto ai = basis[i].alphaA[k1];
-								auto di = basis[i].dA_re[k1] - I * basis[i].dA_im[k1];
+								const auto& ai = basis[i].alphaA[k1];
+								const auto di = basis[i].dA_re[k1] - I * basis[i].dA_im[k1];
 
 								/* loop over contractions - shell J */
 								for (usint k2 = 0; k2 < basis[j].alphaA.size(); k2++) {
-									auto aj = basis[j].alphaA[k2];
-									auto dj = basis[j].dA_re[k2] + I * basis[j].dA_im[k2];
+									const auto& aj = basis[j].alphaA[k2];
+									const auto dj = basis[j].dA_re[k2] + I * basis[j].dA_im[k2];
 
-									auto aij = ai + aj;
-									auto dij = di * dj;
+									const auto aij = ai + aj;
+									const auto dij = di * dj;
 
 									auto Px = ai * Ax + aj * Bx;
 									Px = Px / aij;
@@ -1569,25 +1590,25 @@ int main(int argc, char *argv[]) {
 									CalcEijt(Eijy);
 									CalcEijt(Eijz);
 
-									auto EABx0_1 = EABx0 * exp(-ai * aj * ABx * ABx / aij);
-									auto EABy0_1 = EABy0 * exp(-ai * aj * ABy * ABy / aij);
-									auto EABz0_1 = EABz0 * exp(-ai * aj * ABz * ABz / aij);
-									auto EABxyz = EABx0_1 * EABy0_1 * EABz0_1;
+									const auto EABx0_1 = EABx0 * exp(-ai * aj * ABx * ABx / aij);
+									const auto EABy0_1 = EABy0 * exp(-ai * aj * ABy * ABy / aij);
+									const auto EABz0_1 = EABz0 * exp(-ai * aj * ABz * ABz / aij);
+									const auto EABxyz = EABx0_1 * EABy0_1 * EABz0_1;
 
 									half_trans.zero();
 
 									/* loop over contractions - shell K */
 									for (usint k3 = 0; k3 < basis[k].alphaA.size(); k3++) {
-										auto ak = basis[k].alphaA[k3];
-										auto dk = basis[k].dA_re[k3] - I * basis[k].dA_im[k3];
+										const auto& ak = basis[k].alphaA[k3];
+										const auto dk = basis[k].dA_re[k3] - I * basis[k].dA_im[k3];
 
 										/* loop over contractions - shell L */
 										for (usint k4 = 0; k4 < basis[l].alphaA.size(); k4++) {
-											auto al = basis[l].alphaA[k4];
-											auto dl = basis[l].dA_re[k4] + I * basis[l].dA_im[k4];
+											const auto& al = basis[l].alphaA[k4];
+											const auto dl = basis[l].dA_re[k4] + I * basis[l].dA_im[k4];
 
-											auto akl = ak + al;
-											auto dkl = dk * dl;
+											const auto akl = ak + al;
+											const auto dkl = dk * dl;
 
 											auto Qx = ak * Cx + al * Dx;
 											Qx = Qx / akl;
@@ -1609,17 +1630,17 @@ int main(int argc, char *argv[]) {
 											CalcEijt(Ekly);
 											CalcEijt(Eklz);
 
-											auto ECDx0_1 = ECDx0 * exp(-ak * al * CDx * CDx / akl);
-											auto ECDy0_1 = ECDy0 * exp(-ak * al * CDy * CDy / akl);
-											auto ECDz0_1 = ECDz0 * exp(-ak * al * CDz * CDz / akl);
-											auto ECDxyz = ECDx0_1 * ECDy0_1 * ECDz0_1;
+											const auto ECDx0_1 = ECDx0 * exp(-ak * al * CDx * CDx / akl);
+											const auto ECDy0_1 = ECDy0 * exp(-ak * al * CDy * CDy / akl);
+											const auto ECDz0_1 = ECDz0 * exp(-ak * al * CDz * CDz / akl);
+											const auto ECDxyz = ECDx0_1 * ECDy0_1 * ECDz0_1;
 
 											/* calculate the R integrals for ERI */
 											R_ERI.zero();
 											R_ERI.load(kPx, kPy, kPz, kQx, kQy, kQz,
 											           Px, Py, Pz, Qx, Qy, Qz, aij, akl);
 											CalcRERI(R_ERI);
-											///R_ERI.print();
+											//R_ERI.print();
 
 											int ic = 0;
 											int jc = 0;
@@ -1748,7 +1769,7 @@ int main(int argc, char *argv[]) {
 										int jd = 0;
 										/* loop over Cartesian components - shell L */
 										for (usint ml = 0; ml < shgl; ml++) {
-											full_trans_crt.v[mi][mj][mk][ml] = full_trans_crt.v[mi][mj][mk][ml] / xyz_norm[li][mi] / xyz_norm[lj][mj] / xyz_norm[lk][mk] / xyz_norm[ll][ml];
+											full_trans_crt.v[mi][mj][mk][ml] /=  xyz_norm[li][mi] * xyz_norm[lj][mj] * xyz_norm[lk][mk] * xyz_norm[ll][ml];
 
 											jd++;
 											if (jd > ll - id) {
