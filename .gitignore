@@ -4,3 +4,4 @@ object/
 path/
 build
 *inp
+.vscode/ipch
