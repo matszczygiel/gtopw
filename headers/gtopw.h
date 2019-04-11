@@ -4,6 +4,7 @@
 #include <iostream>
 #include <iomanip>
 #include <cmath>
+#include <cfenv>
 #include <vector>
 #include <complex>
 #include <tuple>
@@ -285,5 +286,38 @@ class Nuclei
     double chrg;
     std::string name;
 };
+
+inline void print_math_errors(std::ostream& os) {
+    if (std::fetestexcept(FE_DIVBYZERO))
+        os << "FE_DIVBYZERO (pole error) reported\n";
+
+    if (std::fetestexcept(FE_OVERFLOW))
+        os << "FE_OVERFLOW (overflow error) reported\n";
+
+    if (std::fetestexcept(FE_UNDERFLOW))
+        os << "FE_UNDERFLOW (underflow error) reported\n";
+
+    if (std::fetestexcept(FE_INEXACT))
+        os << "FE_INEXACT (inexact error) reported\n";
+
+    if (std::fetestexcept(FE_INVALID))
+        os << "FE_INVALID (domain error) reported\n";
+}
+
+inline void print_if_math_errors_set(std::ostream& os) {
+    os << "MATH_ERRNO is      "
+        << (math_errhandling & MATH_ERRNO ? "set" : "not set") << '\n'
+        << "MATH_ERREXCEPT is  "
+        << (math_errhandling & MATH_ERREXCEPT ? "set" : "not set") << '\n';
+}
+
+inline void reset_math_errors() {
+    std::feclearexcept(FE_ALL_EXCEPT);
+}
+
+
+
+
+
 
 #endif //GTOPW_H

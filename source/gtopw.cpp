@@ -277,6 +277,12 @@ int main(int argc, char *argv[]) {
 	cout << endl;
 	ifile.close();
 
+	cout << "\n\n";
+	print_if_math_errors_set(cout);
+	reset_math_errors();
+	cout << "\n\n";
+
+
 	/* ---------------------------------- */
 	/* ----- ONE-ELECTRON INTEGRALS ----- */
 	/* ---------------------------------- */
@@ -1307,6 +1313,10 @@ int main(int argc, char *argv[]) {
 	cout << endl;
 	cout << " All one-electron integrals done." << endl;
 
+	print_math_errors(cout);
+	cout << "\n\n";
+	reset_math_errors();
+
 	/* projection of the basis set functions */
 	if (keys.proj) {
 		double rr, rr2, kr, valr, vali;
@@ -1438,7 +1448,9 @@ int main(int argc, char *argv[]) {
 		};
 
 		cout << " Projection integrals done." << endl;
-		cout << endl;
+		print_math_errors(cout);
+		cout << "\n\n";
+		reset_math_errors();
 	};
 	/* ---------------------------------- */
 	/* ----- TWO-ELECTRON INTEGRALS ----- */
@@ -1469,7 +1481,7 @@ int main(int argc, char *argv[]) {
 		{
 			#pragma omp single
 			{
-				cout << " Using " << omp_get_num_threads() << " threads.\n";
+				cout << " Using " << omp_get_num_threads() << " threads.\n" << flush;
 			}
 
 			/* loop over the shells I, J, K, L*/
@@ -1818,6 +1830,10 @@ int main(int argc, char *argv[]) {
 
 		ofs_2E.close();
 		cout << " Total number of two-electron integrals = " << tot_2E << endl;
+		print_math_errors(cout);
+		cout << "\n\n";
+		reset_math_errors();
+		
 	};
 
 	/*quad fedr,fedi;
