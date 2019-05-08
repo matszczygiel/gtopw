@@ -105,18 +105,18 @@ template <class type> class FullC {
         usint mB_max,mC_max,mD_max;
         
         for(mA=0; mA<shgA; mA++) {
-            indi = posA_strt + mA;
+            indi = posA_strt + mA + 1;
             mB_max = ( Ash == Bsh ) ? mA + 1 : shgB;
             for(mB=0; mB<mB_max; mB++) {
-                indj = posB_strt + mB;
+                indj = posB_strt + mB + 1;
                 mC_max = ( Ash == Csh ) ? mA + 1 : shgC;
                 for(mC=0; mC<mC_max; mC++) {
-                    indk = posC_strt + mC;
+                    indk = posC_strt + mC + 1;
                     mD_max = ( Ash == Csh && Bsh == Dsh ) ? mB + 1 : shgD;
                     for(mD=0; mD<mD_max; mD++) {
-                        indl = posD_strt + mD;
+                        indl = posD_strt + mD + 1;
 
-                        if(!is_unique(indi++, indj++, indk++, indl++)) continue;
+                        if(!is_unique(indi, indj, indk, indl)) continue;
 
                         re_data = ( v[ mA ][ mB ][ mC ][ mD ] ).real();
                         im_data = ( v[ mA ][ mB ][ mC ][ mD ] ).imag();
