@@ -1490,12 +1490,12 @@ int main(int argc, char *argv[]) {
 				for (int j = 0; j < basis.size(); j++)
 					for (int k = 0; k < basis.size(); k++)
 						for (int l = 0; l < basis.size(); l++) {
-
+/*
 							if (j > i) continue;
 							if (k > i) continue;
 							int lmax = (i == k) ? j + 1 : basis.size();
 							if (l >= lmax) continue;
-
+*/
 							/* shell I */
 							const auto& li = basis[i].lA;
 							const auto& Ax = basis[i].Ax;

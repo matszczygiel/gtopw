@@ -11,10 +11,10 @@
 #include "../headers/gtopw.h"
 
 
-inline bool is_unique(int i, int j, int k, int l) {
-    if(i+j-k-l >= 0 && i-j+k-l >= 0 && -i+j+k-l >= 0)
+inline bool is_unique(const int& i, const int& j, const int& k, const int& l) {
+    if(i+j-k-l >= 0 && i-j+k-l >= 0 && i-j-k+l >= 0)
         return true;
-    if(i+j-k-l < 0 && i-j+k-l < 0 && -i+j+k-l < 0)
+    if(i+j-k-l < 0 && i-j+k-l < 0 && i-j-k+l < 0)
         return true;
 
     return false;
@@ -105,17 +105,19 @@ template <class type> class FullC {
         usint mB_max,mC_max,mD_max;
         
         for(mA=0; mA<shgA; mA++) {
-            indi = posA_strt + mA + 1;
+            indi = posA_strt + mA;
             mB_max = ( Ash == Bsh ) ? mA + 1 : shgB;
             for(mB=0; mB<mB_max; mB++) {
-                indj = posB_strt + mB + 1;
+                indj = posB_strt + mB;
                 mC_max = ( Ash == Csh ) ? mA + 1 : shgC;
                 for(mC=0; mC<mC_max; mC++) {
-                    indk = posC_strt + mC + 1;
+                    indk = posC_strt + mC;
                     mD_max = ( Ash == Csh && Bsh == Dsh ) ? mB + 1 : shgD;
                     for(mD=0; mD<mD_max; mD++) {
-                        indl = posD_strt + mD + 1;
-                        
+                        indl = posD_strt + mD;
+
+                        if(!is_unique(indi++, indj++, indk++, indl++)) continue;
+
                         re_data = ( v[ mA ][ mB ][ mC ][ mD ] ).real();
                         im_data = ( v[ mA ][ mB ][ mC ][ mD ] ).imag();
                         znorm   = std::abs( v[ mA ][ mB ][ mC ][ mD ] );
