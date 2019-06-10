@@ -185,6 +185,7 @@ usint FindPos(usint ia_, usint ja_, usint ka_) {
 		};
 	};
 	/* */
+    return 0;
 };
 
 void CalcRNucA(RInts1E<cdouble>& R) {
@@ -809,7 +810,7 @@ void BoysFn(BoysFunction<cdouble>& v) {
 				rez = -rez;
 				imz = -imz;
 
-				int n1, nf;
+				int n1;
 				double c, s, d, SnR, SnI;
 				double ex, cosy, siny, twon;
 				cdouble asym, et;
@@ -840,9 +841,6 @@ void BoysFn(BoysFunction<cdouble>& v) {
 				SnI += anI[0];
 
 
-// CO Z TYM nf ??????????????????????????????????????
-
-				nf = nfmx - 1;
 				for (int n = 1; n < nfmx; n++) {
 					n1 = n - 1;
 					twon = 0.5 * (n + n - 1);
@@ -854,10 +852,7 @@ void BoysFn(BoysFunction<cdouble>& v) {
 					SnI += anI[n];
 
 					if (abs(anR[n]) < del * abs(SnR) &&
-					    abs(anI[n]) < del * abs(SnI)) {
-						nf = n;
-						break;
-					};
+					    abs(anI[n]) < del * abs(SnI)) break;
 				};
 
 				double* gnR = new double[v.nmax + 1];

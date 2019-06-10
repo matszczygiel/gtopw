@@ -1472,7 +1472,7 @@ int main(int argc, char *argv[]) {
 		posimx_crt = 0;
 		vector<int> posimx_crt_v(basis.size());
 
-		for (int i = 0; i < basis.size(); ++i) {
+		for (uint i = 0; i < basis.size(); ++i) {
 			posimx_crt_v[i] = posimx_crt;
 			posimx_crt += crt_siz[basis[i].lA];
 		}
@@ -1484,18 +1484,16 @@ int main(int argc, char *argv[]) {
 				cout << " Using " << omp_get_num_threads() << " threads.\n" << flush;
 			}
 
-			/* loop over the shells I, J, K, L*/
+			/* loop over the shells I, J, K, L */
 			#pragma omp for schedule(dynamic, 1) collapse(4)
-			for (int i = 0; i < basis.size(); i++)
-				for (int j = 0; j < basis.size(); j++)
-					for (int k = 0; k < basis.size(); k++)
-						for (int l = 0; l < basis.size(); l++) {
+			for (uint i = 0; i < basis.size(); i++)
+				for (uint j = 0; j < basis.size(); j++)
+					for (uint k = 0; k < basis.size(); k++)
+						for (uint l = 0; l < basis.size(); l++) {
 
 							if (j > i) continue;
 							if (k > i) continue;
-							int lmax = (i == k) ? j + 1 : basis.size();
-							if (l >= lmax) continue;
-
+                            
 							/* shell I */
 							const auto& li = basis[i].lA;
 							const auto& Ax = basis[i].Ax;
@@ -1566,7 +1564,7 @@ int main(int argc, char *argv[]) {
 
 							/* intermediate storage: half- and fully-contracted */
 							HalfC<cdouble> half_trans(lij, lk, ll);
-							FullC<cdouble> full_trans_crt(li, lj, lk, ll);
+							FullC<cdouble> full_trans_crt(li, lj, lk, ll, num_crt);
 							full_trans_crt.zero();
 
 							/* loop over contractions - shell I */
@@ -1810,7 +1808,7 @@ int main(int argc, char *argv[]) {
 
 							/* switch to the Gamess holy order */
 							if (gamess_order) {
-								FullC<cdouble> full_trans_crt_gam(li, lj, lk, ll);
+								FullC<cdouble> full_trans_crt_gam(li, lj, lk, ll, num_crt);
 								full_trans_crt_gam.zero();
 								GamessHolyOrder2E(full_trans_crt, full_trans_crt_gam, li, lj, lk, ll, true);
 							};
