@@ -18,6 +18,7 @@ extern "C"
 /* type definitions */
 
 using usint = unsigned short int;
+using uint  = unsigned int;
 using llint = long long int;
 using cdouble = std::complex<double>;
 using quad = __float128;
