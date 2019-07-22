@@ -10,7 +10,7 @@ endif()
 
 if (CMAKE_BUILD_TYPE EQUAL "DEBUG")
     message("debug mode")
-endif (CMAKE_BUILD_TYPE EQUAL "DEBUG")
+endif()
 
 
 add_executable(${PROJECT_NAME} ${sources} ${headers})
