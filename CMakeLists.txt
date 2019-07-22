@@ -8,6 +8,11 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")
 endif()
 
+if (CMAKE_BUILD_TYPE EQUAL "DEBUG")
+    message("debug mode")
+endif (CMAKE_BUILD_TYPE EQUAL "DEBUG")
+
+
 add_executable(${PROJECT_NAME} ${sources} ${headers})
 
 set_target_properties(xgtopw PROPERTIES LINKER_LANGUAGE CXX)
@@ -15,6 +20,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/h
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_11)
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -fext-numeric-literals)
+
+target_compile_definitions(${PROJECT_NAME} PUBLIC "$<$<CONFIG:DEBUG>:GTOPW_DEBUG>")
 
 find_package(OpenMP REQUIRED)
 find_library(Quadmath NAMES libquadmath.so libquadmath.so.0)
