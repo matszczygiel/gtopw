@@ -1,12 +1,15 @@
 $INTS
-4
+3
 STVH
 DIPOLE
 VELOCITY
-ERI
 $END
 $PATH
 path/
+$END
+$REPRESENTATION
+cartesian
+spherical
 $END
 $POINTS
 1

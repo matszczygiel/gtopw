@@ -57,12 +57,33 @@ int main(int argc, char *argv[]) {
 	string line, name;
 	stringstream ss;
 
-	/* read destination path (MS)*/
+	// read destination path (MS)
 	ifile.open(inpname);
 	while (getline(ifile, line))
 		if (line == "$PATH") {
 			getline(ifile, line);
 			keys.path = line;
+			break;
+		};
+	ifile.close();
+	line.clear();
+
+	// read representation [cartesian / spherical] (MS)
+	ifile.open(inpname);
+	while (getline(ifile, line))
+		if (line == "$REPRESENTATION") {
+			keys.cart = false;
+			keys.spher = false;
+			while(getline(ifile, line)) {
+				if(line == "cartesian")
+					keys.cart = true;
+				else if(line == "spherical")
+					keys.spher = true;
+				else if(line == "$END")
+					break;
+				else
+					throw std::runtime_error("Unknown parameter for $REPRESENTATION");
+			}
 			break;
 		};
 	ifile.close();
@@ -1237,8 +1258,8 @@ int main(int argc, char *argv[]) {
 
 	/* write the one-electron integrals to the disk - cartesian */
 
-	if(num_ints != 0) {
-		std::ofstream ofs(keys.file1E, std::ios::out | std::ios::binary);
+	if(num_ints != 0 && keys.cart) {
+		std::ofstream ofs(keys.file1E_crt, std::ios::out | std::ios::binary);
 
 		/*check the file1E path (MS)*/
 		if (!ofs.is_open()) {
@@ -1276,37 +1297,37 @@ int main(int argc, char *argv[]) {
 	};
 
 	/* write the one-electron integrals to the disk - spherical */
-	/*
-    std::ofstream ofs( keys.file1E, std::ios::out|std::ios::binary );
-    
-    WriteDown( ovrl_sph.v, num_sph2, ofs );
-    WriteDown( kin_sph.v , num_sph2, ofs );
-    WriteDown( nuc_sph.v , num_sph2, ofs );
-    WriteDown( bare_sph.v, num_sph2, ofs );
-    
-    WriteDown( dipx_sph.v, num_sph2, ofs );
-    WriteDown( dipy_sph.v, num_sph2, ofs );
-    WriteDown( dipz_sph.v, num_sph2, ofs );
-     
-    WriteDown( qdxx_sph.v, num_sph2, ofs );
-    WriteDown( qdyy_sph.v, num_sph2, ofs );
-    WriteDown( qdzz_sph.v, num_sph2, ofs );
-    WriteDown( qdxy_sph.v, num_sph2, ofs );
-    WriteDown( qdxz_sph.v, num_sph2, ofs );
-    WriteDown( qdyz_sph.v, num_sph2, ofs );
-    
-    WriteDown( grdx_sph.v, num_sph2, ofs );
-    WriteDown( grdy_sph.v, num_sph2, ofs );
-    WriteDown( grdz_sph.v, num_sph2, ofs );
-    
-    WriteDown( tx_sph.v  , num_sph2, ofs );
-    WriteDown( ty_sph.v  , num_sph2, ofs );
-    WriteDown( tz_sph.v  , num_sph2, ofs );
-    
-    WriteDown( capi_sph.v, num_crt2, ofs );
-    
-    ofs.close();
-    */
+	if(num_ints != 0 && keys.spher) {
+    	std::ofstream ofs( keys.file1E_sph, std::ios::out|std::ios::binary );
+	
+    	WriteDown( ovrl_sph.v, num_sph2, ofs );
+    	WriteDown( kin_sph.v , num_sph2, ofs );
+    	WriteDown( nuc_sph.v , num_sph2, ofs );
+    	WriteDown( bare_sph.v, num_sph2, ofs );
+	
+    	WriteDown( dipx_sph.v, num_sph2, ofs );
+    	WriteDown( dipy_sph.v, num_sph2, ofs );
+    	WriteDown( dipz_sph.v, num_sph2, ofs );
+	
+    	WriteDown( qdxx_sph.v, num_sph2, ofs );
+    	WriteDown( qdyy_sph.v, num_sph2, ofs );
+    	WriteDown( qdzz_sph.v, num_sph2, ofs );
+    	WriteDown( qdxy_sph.v, num_sph2, ofs );
+    	WriteDown( qdxz_sph.v, num_sph2, ofs );
+    	WriteDown( qdyz_sph.v, num_sph2, ofs );
+	
+    	WriteDown( grdx_sph.v, num_sph2, ofs );
+    	WriteDown( grdy_sph.v, num_sph2, ofs );
+    	WriteDown( grdz_sph.v, num_sph2, ofs );
+	
+    	WriteDown( tx_sph.v  , num_sph2, ofs );
+    	WriteDown( ty_sph.v  , num_sph2, ofs );
+    	WriteDown( tz_sph.v  , num_sph2, ofs );
+	
+    	WriteDown( capi_sph.v, num_crt2, ofs );
+	
+    	ofs.close();
+	};
 
 	// PrintCMatrix( ovrl_crt.v , num_crt );
 

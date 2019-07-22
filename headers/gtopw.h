@@ -141,6 +141,7 @@ class Keywords
 {
   public:
     bool spher;
+    bool cart;
 
     bool stvh;
     bool dip;
@@ -154,7 +155,8 @@ class Keywords
     int write_point;
     std::vector<std::tuple<double, double, double>> points;
 
-    std::string file1E;
+    std::string file1E_crt;
+    std::string file1E_sph;
     std::string file2E;
     std::string proj1E;
     std::string norm1E;
@@ -183,6 +185,7 @@ class Keywords
         write_point = 0;
 
         spher = false;
+        cart = true;
 
         thrsh = 1.0e-14;
 
@@ -197,17 +200,16 @@ class Keywords
 
     void name_me(const std::string name)
     {
-        file1E = name.substr(0, name.length() - 4);
-        file2E = file1E;
-        proj1E = file1E;
-        norm1E = file1E;
-        file1E = path + "file1E_" + file1E + ".F";
-        file2E = path + "file2E_" + file2E + ".F";
-        proj1E = path + "proj1E_" + proj1E;
-        norm1E = path + "norm1E_" + norm1E + ".F";
+        const auto file = name.substr(0, name.length() - 4);
+        file1E_crt = path + "file1E_" + file + "_crt.F";
+        file1E_sph = path + "file1E_" + file + "_sph.F";
+        file2E = path + "file2E_" + file + ".F";
+        proj1E = path + "proj1E_" + file;
+        norm1E = path + "norm1E_" + file + ".F";
 
         std::cout << " Names of the integral files: " << std::endl;
-        std::cout << "  " << file1E << std::endl;
+        std::cout << "  " << file1E_crt << std::endl;
+        std::cout << "  " << file1E_sph << std::endl;
         std::cout << "  " << file2E << std::endl;
         std::cout << "  " << norm1E << std::endl;
         std::cout << " (automatic assignment)" << std::endl;
@@ -290,25 +292,25 @@ class Nuclei
 
 inline void print_math_errors(std::ostream& os) {
     if (std::fetestexcept(FE_DIVBYZERO))
-        os << "FE_DIVBYZERO (pole error) reported\n";
+        os << " FE_DIVBYZERO (pole error) reported\n";
 
     if (std::fetestexcept(FE_OVERFLOW))
-        os << "FE_OVERFLOW (overflow error) reported\n";
+        os << " FE_OVERFLOW (overflow error) reported\n";
 
     if (std::fetestexcept(FE_UNDERFLOW))
-        os << "FE_UNDERFLOW (underflow error) reported\n";
+        os << " FE_UNDERFLOW (underflow error) reported\n";
 
     if (std::fetestexcept(FE_INEXACT))
-        os << "FE_INEXACT (inexact error) reported\n";
+        os << " FE_INEXACT (inexact error) reported\n";
 
     if (std::fetestexcept(FE_INVALID))
-        os << "FE_INVALID (domain error) reported\n";
+        os << " FE_INVALID (domain error) reported\n";
 }
 
 inline void print_if_math_errors_set(std::ostream& os) {
-    os << "MATH_ERRNO is      "
+    os << " MATH_ERRNO is      "
         << (math_errhandling & MATH_ERRNO ? "set" : "not set") << '\n'
-        << "MATH_ERREXCEPT is  "
+        << " MATH_ERREXCEPT is  "
         << (math_errhandling & MATH_ERREXCEPT ? "set" : "not set") << '\n';
 }
 
