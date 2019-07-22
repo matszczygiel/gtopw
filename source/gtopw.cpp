@@ -35,12 +35,18 @@ int main(int argc, char *argv[]) {
 	Keywords keys;
 	Init();
 	string inpname;
+
+	// define input for debuging pourposes (MS)
+	#ifdef GTOPW_DEBUG
+	inpname = "minimal_test.inp";
+	#else
 	if (argc > 1) {
 		inpname = argv[1];
 	} else {
 		cout << " Name of the input file not specified! Emergency halt." << endl;
 		exit(EXIT_FAILURE);
 	};
+	#endif
 
 	/* read the $BASIS keyword */
 	vector<GaussC> basis;
@@ -320,67 +326,67 @@ int main(int argc, char *argv[]) {
 
 	/* memory for complete matrices */
 	arr1d<cdouble> ovrl_crt(num_crt2);
-	arr1d<cdouble> ovrl_sph(num_crt2);
+	arr1d<cdouble> ovrl_sph(num_sph2);
 
 	arr1d<cdouble> kin_crt(num_crt2);
-	arr1d<cdouble> kin_sph(num_crt2);
+	arr1d<cdouble> kin_sph(num_sph2);
 
 	arr1d<cdouble> nuc_crt(num_crt2);
-	arr1d<cdouble> nuc_sph(num_crt2);
+	arr1d<cdouble> nuc_sph(num_sph2);
 
 	arr1d<cdouble> bare_crt(num_crt2);
-	arr1d<cdouble> bare_sph(num_crt2);
+	arr1d<cdouble> bare_sph(num_sph2);
 
 	arr1d<cdouble> dipx_crt(num_crt2);
-	arr1d<cdouble> dipx_sph(num_crt2);
+	arr1d<cdouble> dipx_sph(num_sph2);
 
 	arr1d<cdouble> dipy_crt(num_crt2);
-	arr1d<cdouble> dipy_sph(num_crt2);
+	arr1d<cdouble> dipy_sph(num_sph2);
 
 	arr1d<cdouble> dipz_crt(num_crt2);
-	arr1d<cdouble> dipz_sph(num_crt2);
+	arr1d<cdouble> dipz_sph(num_sph2);
 
 	arr1d<cdouble> qdxx_crt(num_crt2);
-	arr1d<cdouble> qdxx_sph(num_crt2);
+	arr1d<cdouble> qdxx_sph(num_sph2);
 
 	arr1d<cdouble> qdyy_crt(num_crt2);
-	arr1d<cdouble> qdyy_sph(num_crt2);
+	arr1d<cdouble> qdyy_sph(num_sph2);
 
 	arr1d<cdouble> qdzz_crt(num_crt2);
-	arr1d<cdouble> qdzz_sph(num_crt2);
+	arr1d<cdouble> qdzz_sph(num_sph2);
 
 	arr1d<cdouble> qdxy_crt(num_crt2);
-	arr1d<cdouble> qdxy_sph(num_crt2);
+	arr1d<cdouble> qdxy_sph(num_sph2);
 
 	arr1d<cdouble> qdxz_crt(num_crt2);
-	arr1d<cdouble> qdxz_sph(num_crt2);
+	arr1d<cdouble> qdxz_sph(num_sph2);
 
 	arr1d<cdouble> qdyz_crt(num_crt2);
-	arr1d<cdouble> qdyz_sph(num_crt2);
+	arr1d<cdouble> qdyz_sph(num_sph2);
 
 	arr1d<cdouble> grdx_crt(num_crt2);
-	arr1d<cdouble> grdx_sph(num_crt2);
+	arr1d<cdouble> grdx_sph(num_sph2);
 
 	arr1d<cdouble> grdy_crt(num_crt2);
-	arr1d<cdouble> grdy_sph(num_crt2);
+	arr1d<cdouble> grdy_sph(num_sph2);
 
 	arr1d<cdouble> grdz_crt(num_crt2);
-	arr1d<cdouble> grdz_sph(num_crt2);
+	arr1d<cdouble> grdz_sph(num_sph2);
 
 	arr1d<cdouble> tx_crt(num_crt2);
-	arr1d<cdouble> tx_sph(num_crt2);
+	arr1d<cdouble> tx_sph(num_sph2);
 
 	arr1d<cdouble> ty_crt(num_crt2);
-	arr1d<cdouble> ty_sph(num_crt2);
+	arr1d<cdouble> ty_sph(num_sph2);
 
 	arr1d<cdouble> tz_crt(num_crt2);
-	arr1d<cdouble> tz_sph(num_crt2);
+	arr1d<cdouble> tz_sph(num_sph2);
 
 	arr1d<cdouble> angz_crt(num_crt2);
-	arr1d<cdouble> angz_sph(num_crt2);
+	arr1d<cdouble> angz_sph(num_sph2);
 
 	arr1d<cdouble> capi_crt(num_crt2);
-	arr1d<cdouble> capi_sph(num_crt2);
+	arr1d<cdouble> capi_sph(num_sph2);
 
 	/* memory for shell data */
 	arr1d<cdouble> shl_crt_s(shl_siz_crt2);
@@ -1324,7 +1330,7 @@ int main(int argc, char *argv[]) {
     	WriteDown( ty_sph.v  , num_sph2, ofs );
     	WriteDown( tz_sph.v  , num_sph2, ofs );
 	
-    	WriteDown( capi_sph.v, num_crt2, ofs );
+    	WriteDown( capi_sph.v, num_sph2, ofs );
 	
     	ofs.close();
 	};
