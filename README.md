@@ -11,9 +11,9 @@ Prefer building using cmake.
 * Go into the main directory (the one that CMakeList.txt is).
 * Execute
 ```
-mkdir build
-cd build
-cmake ..
+mkdir build  
+cd build  
+cmake ..  
 make -j4
 ```
 * Wait until compilation ends.
